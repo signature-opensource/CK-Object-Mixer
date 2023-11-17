@@ -18,12 +18,12 @@ namespace CK.Poco.Mixer
     /// </para>
     /// </summary>
     /// <typeparam name="T">The target Poco type.</typeparam>
-    public class CompositePocoMixer : PocoMixer<T, CompositePocoMixerConfiguration> where T : IPoco
+    public class CompositePocoMixer : PocoMixer<CompositePocoMixerConfiguration>
     {
-        readonly ImmutableArray<IPocoMixer<T>> _children;
-        IPocoMixer<T>? _winner;
+        readonly ImmutableArray<PocoMixer> _children;
+        PocoMixer? _winner;
 
-        internal CompositePocoMixer( CompositePocoMixerConfiguration configuration, ImmutableArray<IPocoMixer<T>> mixers )
+        internal CompositePocoMixer( CompositePocoMixerConfiguration configuration, ImmutableArray<PocoMixer> mixers )
             : base( configuration )
         {
             _children = mixers;

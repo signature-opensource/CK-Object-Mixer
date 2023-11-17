@@ -1,5 +1,6 @@
 using CK.Core;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,30 +12,18 @@ namespace CK.Poco.Mixer
     /// <typeparam name="TConfiguration"></typeparam>
     public abstract class PocoMixer<TConfiguration> : PocoMixer where TConfiguration : PocoMixerConfiguration
     {
-        readonly TConfiguration _configuration;
-
+        /// <summary>
+        /// Initializes a new <see cref="PocoMixer"/>.
+        /// </summary>
+        /// <param name="configuration">The required configuration.</param>
         protected PocoMixer( TConfiguration configuration )
+            : base( configuration )
         {
-            _configuration = configuration;
         }
 
-        PocoMixerConfiguration IPocoMixer.Configuration => _configuration;
-
         /// <inheritdoc />
-        public TConfiguration Configuration => _configuration;
+        public new TConfiguration Configuration => Unsafe.As<TConfiguration>( _configuration );
 
-
-        /// <inheritdoc />
-        public abstract ValueTask<bool> AcceptAsync( IActivityMonitor monitor,
-                                                     IPoco input,
-                                                     UserMessageCollector? explanation,
-                                                     CancellationToken cancellation );
-
-        /// <inheritdoc />
-        public abstract ValueTask ProcessAsync( IActivityMonitor monitor,
-                                                IPoco input,
-                                                Action<IPoco> output,
-                                                CancellationToken cancellation = default );
     }
 
 }

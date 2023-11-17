@@ -50,7 +50,7 @@ namespace CK.Poco.Mixer
             Interlocked.CompareExchange( ref _cachedBuilder, b, null );
         }
 
-        public PocoMixerConfiguration? Create( IActivityMonitor monitor, IConfiguration configuration )
+        public PocoMixerConfiguration? Create( IActivityMonitor monitor, IConfigurationSection configuration )
         {
             // No real need for a try/finally here.
             var b = ObtainBuilder();
@@ -74,6 +74,10 @@ namespace CK.Poco.Mixer
         internal readonly PocoMixerConfiguration _configuration;
         [AllowNull] internal readonly PocoDirectory _pocoDirectory;
 
+        /// <summary>
+        /// Initializes a new <see cref="PocoMixer"/>.
+        /// </summary>
+        /// <param name="configuration">The required configuration.</param>
         protected PocoMixer( PocoMixerConfiguration configuration )
         {
             _configuration = configuration;

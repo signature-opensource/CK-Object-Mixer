@@ -27,17 +27,17 @@ namespace CK.Poco.Mixer
         }
 
         /// <inheritdoc />
-        public virtual IPocoMixer<T>? CreateMixer<T>( IActivityMonitor monitor, IServiceProvider services ) where T : IPoco
+        public override PocoMixer? CreateMixer( IActivityMonitor monitor, IServiceProvider services )
         {
-            var items = CreateMixers<T>( monitor, services );
+            var items = CreateMixers( monitor, services );
             return items.Length > 0
-                    ? new CompositePocoMixer<T>( this, items! )
+                    ? new CompositePocoMixer( this, items! )
                     : null;
         }
 
-        protected ImmutableArray<IPocoMixer<T>> CreateMixers<T>( IActivityMonitor monitor, IServiceProvider services ) where T : IPoco
+        protected ImmutableArray<PocoMixer> CreateMixers( IActivityMonitor monitor, IServiceProvider services )
         {
-            return _mixers.Select( c => c.CreateMixer<T>( monitor, services ) )
+            return _mixers.Select( c => c.CreateMixer( monitor, services ) )
                           .Where( s => s != null )
                           .ToImmutableArray()!;
         }

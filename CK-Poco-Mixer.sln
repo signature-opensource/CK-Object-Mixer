@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Poco.Mixer", "CK.Poco.Mi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CK.Poco.Mixer.Tests", "Tests\CK.Poco.Mixer.Tests\CK.Poco.Mixer.Tests.csproj", "{90337E47-E1D0-40D5-B36B-A4D391297E94}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCakeBuilder", "CodeCakeBuilder\CodeCakeBuilder.csproj", "{5F4D31BD-A88E-4CF3-A202-19D6428F8CD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{90337E47-E1D0-40D5-B36B-A4D391297E94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90337E47-E1D0-40D5-B36B-A4D391297E94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90337E47-E1D0-40D5-B36B-A4D391297E94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F4D31BD-A88E-4CF3-A202-19D6428F8CD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F4D31BD-A88E-4CF3-A202-19D6428F8CD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F4D31BD-A88E-4CF3-A202-19D6428F8CD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F4D31BD-A88E-4CF3-A202-19D6428F8CD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
