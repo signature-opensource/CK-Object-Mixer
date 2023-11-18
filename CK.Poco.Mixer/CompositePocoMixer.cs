@@ -9,88 +9,77 @@ using System.Xml.Linq;
 namespace CK.Poco.Mixer
 {
     /// <summary>
-    /// Composite of multiple <see cref="IPocoMixer"/>.
+    /// Composite of multiple <see cref="BasePocoMixer"/>.
     /// <para>
     /// Subordinate mixers' are called in depth-first order.
     /// </para>
     /// <para>
-    /// This class may be specialized to override <see cref="RootAcceptAsync"/>.
+    /// This class may be specialized to override <see cref="AcceptHookAsync(IActivityMonitor, BasePocoMixer.AcceptContext)"/>,
+    /// <see cref="AfterAcceptAsync(IActivityMonitor, BasePocoMixer.AcceptContext)"/> and <see cref="ProcessAsync(IActivityMonitor, BasePocoMixer.ProcessContext)"/>.
     /// </para>
     /// </summary>
-    /// <typeparam name="T">The target Poco type.</typeparam>
-    public class CompositePocoMixer : PocoMixer<CompositePocoMixerConfiguration>
+    public class CompositePocoMixer : BasePocoMixer<CompositePocoMixerConfiguration>
     {
-        readonly ImmutableArray<PocoMixer> _children;
-        PocoMixer? _winner;
+        readonly ImmutableArray<BasePocoMixer> _children;
 
-        internal CompositePocoMixer( CompositePocoMixerConfiguration configuration, ImmutableArray<PocoMixer> mixers )
+        internal CompositePocoMixer( CompositePocoMixerConfiguration configuration, ImmutableArray<BasePocoMixer> mixers )
             : base( configuration )
         {
             _children = mixers;
         }
 
         /// <summary>
-        /// Calls <see cref="RootAcceptAsync"/> first and if it returns true (the default), submits the
-        /// <paramref name="input"/> to all the subordinated mixers until the input is accepted.
+        /// Calls <see cref="AcceptHookAsync"/> and if the input is accepted immediately returns.
+        /// If AcceptHookAsync doesn't accept, then all the subordinated mixers are called until the input is accepted
+        /// and <see cref="AfterAcceptAsync(IActivityMonitor, AcceptContext)"/> is called.
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
-        /// <param name="input">The input to challenge.</param>
-        /// <param name="explanation">Optional explanations collector.</param>
-        /// <param name="cancellation">Cancellation token.</param>
-        /// <returns>True if the input should be processed by this mixer, false otherwise.</returns>
-        public sealed override async ValueTask<bool> AcceptAsync( IActivityMonitor monitor,
-                                                                  IPoco input,
-                                                                  UserMessageCollector? explanation = null,
-                                                                  CancellationToken cancellation = default )
+        /// <param name="context">The accept context.</param>
+        /// <returns>The awaitable.</returns>
+        public override async ValueTask AcceptAsync( IActivityMonitor monitor, AcceptContext context )
         {
-            if( !await RootAcceptAsync( monitor, input, explanation, cancellation ).ConfigureAwait( false ) )
-            {
-                return false;
-            }
+            using var g = context.UserMessages?.OpenInfo( $"Input submitted to '{Configuration.Name}'." );
+            await AcceptHookAsync( monitor, context ).ConfigureAwait( false );
+            if( context.IsAccepted ) return;
             foreach( var c in _children )
             {
-                if( await c.AcceptAsync( monitor, input, explanation, cancellation ).ConfigureAwait( false ) )
-                {
-                    _winner = c;
-                    return true;
-                }
+                await c.AcceptAsync( monitor, context ).ConfigureAwait( false );
+                if( context.IsAccepted ) break;
             }
-            return false;
+            await AfterAcceptAsync( monitor, context ).ConfigureAwait( false );
         }
 
         /// <summary>
-        /// Optional extension point that can be used to reject <paramref name="input"/> regardless
-        /// of the subordinated mixer.
+        /// Extension point called before calling children's AcceptAsync. Does nothing by default. 
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
-        /// <param name="input">The input to challenge.</param>
-        /// <param name="explanation">Optional explanations collector.</param>
-        /// <param name="cancellation">Cancellation token.</param>
-        /// <returns>True if the input should be processed by this mixer, false otherwise.</returns>
-        protected virtual ValueTask<bool> RootAcceptAsync( IActivityMonitor monitor,
-                                                           IPoco input,
-                                                           UserMessageCollector? explanation,
-                                                           CancellationToken cancellation )
-        {
-            return new ValueTask<bool>( true );
-        }
-
-        /// <summary>
-        /// Routes the call to the subordinate mixer that have accepted the <paramref name="input"/>.
-        /// </summary>
-        /// <param name="monitor">The monitor to use.</param>
-        /// <param name="input">The accepted input.</param>
-        /// <param name="output">Function to call to collect outputs.</param>
-        /// <param name="cancellation">Cancellation token.</param>
+        /// <param name="context">The accept context.</param>
         /// <returns>The awaitable.</returns>
-        public sealed override ValueTask ProcessAsync( IActivityMonitor monitor,
-                                                       IPoco input,
-                                                       Action<IPoco> output,
-                                                       CancellationToken cancellation )
-        {
-            Throw.DebugAssert( _winner != null );
-            return _winner.ProcessAsync( monitor, input, output, cancellation );
-        }
+        protected virtual ValueTask AcceptHookAsync( IActivityMonitor monitor, AcceptContext context ) => default;
+
+        /// <summary>
+        /// Always called after the children's AcceptAsync method calls: the <paramref name="context"/> may
+        /// already be accepted.
+        /// <para>
+        /// This extension point can alter the accept context in any way, including accepting it: in such case
+        /// <see cref="ProcessAsync(IActivityMonitor, ProcessContext)"/> must be overridden.
+        /// </para>
+        /// </summary>
+        /// <param name="monitor">The monitor to use.</param>
+        /// <param name="context">The accept context.</param>
+        /// <returns>The awaitable.</returns>
+        protected virtual ValueTask AfterAcceptAsync( IActivityMonitor monitor, AcceptContext context ) => default;
+
+        /// <summary>
+        /// Called if and only if <see cref="AcceptHookAsync(IActivityMonitor, AcceptContext)"/> or <see cref="AfterAcceptAsync(IActivityMonitor, AcceptContext)"/>
+        /// accepted the input. Does nothing by default.
+        /// <para></para>
+        /// This must be overridden when and only when AcceptHookAsync or AfterAcceptAsync are overridden.
+        /// </summary>
+        /// <param name="monitor">The monitor to use.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>The awaitable.</returns>
+        public override ValueTask ProcessAsync( IActivityMonitor monitor, ProcessContext context ) => default;
     }
 
 }

@@ -1,8 +1,5 @@
 using CK.Core;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Xml.Linq;
 
 namespace CK.Poco.Mixer
 {
@@ -34,13 +31,21 @@ namespace CK.Poco.Mixer
         public ImmutableConfigurationSection Configuration => _configuration;
 
         /// <summary>
+        /// Gets a name that identifies this configuration.
+        /// <para>
+        /// This currently returns the <see cref="ImmutableConfigurationSection.Path"/>.
+        /// </para>
+        /// </summary>
+        public ReadOnlySpan<char> Name => _configuration.Path;
+
+        /// <summary>
         /// Creates a mixer. A null return is not necessarily an error (errors
         /// should be handled via the monitor - see <see cref="ActivityMonitorExtension.OnError(IActivityMonitor, Action)"/>
         /// for instance). A null return must be ignored: the configuration is "disabled", "non applicable", or is a "placeholder".
         /// </summary>
         /// <param name="monitor">The monitor that must be used to signal errors.</param>
         /// <returns>A strategy or null on error or if, for any reason, no strategy must be created from this configuration.</returns>
-        public abstract PocoMixer? CreateMixer( IActivityMonitor monitor, IServiceProvider services );
+        public abstract BasePocoMixer? CreateMixer( IActivityMonitor monitor, IServiceProvider services );
 
     }
 }

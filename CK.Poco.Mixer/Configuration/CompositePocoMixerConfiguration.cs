@@ -27,7 +27,7 @@ namespace CK.Poco.Mixer
         }
 
         /// <inheritdoc />
-        public override PocoMixer? CreateMixer( IActivityMonitor monitor, IServiceProvider services )
+        public override BasePocoMixer? CreateMixer( IActivityMonitor monitor, IServiceProvider services )
         {
             var items = CreateMixers( monitor, services );
             return items.Length > 0
@@ -35,7 +35,7 @@ namespace CK.Poco.Mixer
                     : null;
         }
 
-        protected ImmutableArray<PocoMixer> CreateMixers( IActivityMonitor monitor, IServiceProvider services )
+        protected ImmutableArray<BasePocoMixer> CreateMixers( IActivityMonitor monitor, IServiceProvider services )
         {
             return _mixers.Select( c => c.CreateMixer( monitor, services ) )
                           .Where( s => s != null )
