@@ -1,7 +1,6 @@
 using CK.Core;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +10,9 @@ namespace CK.Poco.Mixer
     {
         readonly IServiceProvider _services;
         readonly PocoMixerConfiguration _configuration;
+        // At least 1 when mixer is initialized.
+        int _maxMixCount;
+        BasePocoMixer? _mixer;
 
         public SimplePocoMixer( IServiceProvider services, PocoMixerConfiguration configuration )
         {
@@ -20,100 +22,40 @@ namespace CK.Poco.Mixer
             _configuration = configuration;
         }
 
-        public sealed class Result
+        public async ValueTask<MixerResult<T>> MixAsync( IActivityMonitor monitor, IPoco input, UserMessageCollector? userMessages, CancellationToken cancellation )
         {
-            readonly bool _success;
-            readonly IReadOnlyList<T> _outputs;
-            readonly ImmutableArray<UserMessage> _messages;
-            readonly IReadOnlyList<IPoco> _rejected;
-
-            internal Result( bool success, IReadOnlyList<T>? outputs = null, UserMessageCollector? messages = null )
+            var mixer = EnsureInitialized( monitor );
+            if( mixer == null )
             {
-                _success = success;
-                _outputs = outputs ?? ImmutableArray<T>.Empty;
-                _messages = messages?.UserMessages.ToImmutableArray() ?? ImmutableArray<UserMessage>.Empty;
+                userMessages?.Error( $"Empty mixer configured by '{_configuration.Name}'." );
+                return new MixerResult<T>( false );
             }
-
-            public bool Success => _success;
-
-            public IReadOnlyList<T> Outputs => _outputs;
-
-            public ImmutableArray<UserMessage> Messages => _messages;
+            var processor = new MixerProcessor( mixer, typeof(T), userMessages, _maxMixCount, cancellation );
+            return await processor.ProcessAsync( monitor, input );
         }
 
-        sealed class Processor
+        BasePocoMixer? EnsureInitialized( IActivityMonitor monitor )
         {
-            readonly BasePocoMixer _mixer;
-            readonly UserMessageCollector? _userMessages;
-            readonly string _inputTypeName;
-            readonly CancellationToken _cancellation;
-            readonly List<T> _outputs;
-            readonly Queue<IPoco> _remainder;
-            List<IPoco>? _rejected;
-            IPoco? _processFailure;
-
-            public Processor( BasePocoMixer mixer, UserMessageCollector? userMessages, string? inputTypeName, CancellationToken cancellation )
+            if( _maxMixCount == 0 )
             {
-                _mixer = mixer;
-                _userMessages = userMessages;
-                _inputTypeName = inputTypeName ?? typeof(T).FullName ?? "input";
-                _cancellation = cancellation;
-                _outputs = new List<T>();
-                _remainder = new Queue<IPoco>();
-            }
-
-            public ValueTask ProcessAsync( IActivityMonitor monitor, IPoco input )
-            {
-                _remainder.Enqueue( input );
-                return DoProcessAsync( monitor );
-            }
-
-            async ValueTask DoProcessAsync( IActivityMonitor monitor )
-            {
-                int inputNumber = 0;
-                var aC = new BasePocoMixer.AcceptContext( _userMessages, _inputTypeName, _cancellation );
-                var pC = new BasePocoMixer.ProcessContext();
-                while( _remainder.TryDequeue( out var input ) )
+                _mixer = _configuration.CreateMixer( monitor, _services );
+                if( _mixer == null )
                 {
-                    aC.Initialize( input );
-                    await _mixer.AcceptAsync( monitor, aC );
-                    if( !aC.IsAcceptedSuccessfully )
+                    _maxMixCount = 1;
+                    monitor.Error( $"Empty mixer configured by '{_configuration.Name}'." );
+                }
+                else
+                {
+                    var max = _configuration.Configuration.TryGetIntValue( monitor, "MaxMixCount", 1 );
+                    if( max.HasValue ) _maxMixCount = max.Value;
+                    else
                     {
-                        if( aC.RejectReason != RejectReason.IgnoreInput )
-                        {
-                            if( aC.RejectReason == RejectReason.None )
-                            {
-                                _userMessages?.Error( $"No mixer accepted the {_inputTypeName}." );
-                            }
-                            _rejected ??= new List<IPoco>();
-                            _rejected.Add( input );
-                        }
+                        _maxMixCount = 100;
+                        monitor.Info( $"Mixer '{_configuration.Name}' use the default MaxMixCount = 100." );
                     }
-                    else 
-                    {
-                        pC.Initialize( aC, Receive );
-                        await aC.Winner.ProcessAsync( monitor, pC );
-                    }
-                    ++inputNumber;
                 }
             }
-
-            void Receive( IPoco output )
-            {
-                if( output is T result ) _outputs.Add( result );
-                else _remainder.Enqueue( output );
-            }
+            return _mixer;
         }
-
-        //public async ValueTask<Result> MixAsync( IActivityMonitor monitor, IPoco input, UserMessageCollector? userMessages )
-        //{
-        //    var mixer = _configuration.CreateMixer( monitor, _services );
-        //    if( mixer == null )
-        //    {
-        //        monitor.Error( $"Empty mixer configured by '{_configuration.Name}'." );
-        //        return new Result( false );
-        //    }
-        //}
-
     }
 }

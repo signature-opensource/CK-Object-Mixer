@@ -15,7 +15,7 @@ namespace CK.Poco.Mixer
     /// </para>
     /// <para>
     /// This class may be specialized to override <see cref="AcceptHookAsync(IActivityMonitor, BasePocoMixer.AcceptContext)"/>,
-    /// <see cref="AfterAcceptAsync(IActivityMonitor, BasePocoMixer.AcceptContext)"/> and <see cref="ProcessAsync(IActivityMonitor, BasePocoMixer.ProcessContext)"/>.
+    /// <see cref="AfterAcceptAsync(IActivityMonitor, BasePocoMixer.AcceptContext)"/> and <see cref="DoProcessAsync(IActivityMonitor, BasePocoMixer.ProcessContext)"/>.
     /// </para>
     /// </summary>
     public class CompositePocoMixer : BasePocoMixer<CompositePocoMixerConfiguration>
@@ -62,7 +62,7 @@ namespace CK.Poco.Mixer
         /// already be accepted.
         /// <para>
         /// This extension point can alter the accept context in any way, including accepting it: in such case
-        /// <see cref="ProcessAsync(IActivityMonitor, ProcessContext)"/> must be overridden.
+        /// <see cref="DoProcessAsync(IActivityMonitor, ProcessContext)"/> must be overridden.
         /// </para>
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
@@ -74,12 +74,12 @@ namespace CK.Poco.Mixer
         /// Called if and only if <see cref="AcceptHookAsync(IActivityMonitor, AcceptContext)"/> or <see cref="AfterAcceptAsync(IActivityMonitor, AcceptContext)"/>
         /// accepted the input. Does nothing by default.
         /// <para></para>
-        /// This must be overridden when and only when AcceptHookAsync or AfterAcceptAsync are overridden.
+        /// It is useless to override this when AcceptHookAsync or AfterAcceptAsync are not also overridden.
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
         /// <param name="context">The context.</param>
         /// <returns>The awaitable.</returns>
-        public override ValueTask ProcessAsync( IActivityMonitor monitor, ProcessContext context ) => default;
+        protected override ValueTask ProcessAsync( IActivityMonitor monitor, ProcessContext context ) => default;
     }
 
 }

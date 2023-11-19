@@ -13,6 +13,8 @@ namespace CK.Poco.Mixer
         public sealed class AcceptContext
         {
             [AllowNull] IPoco _input;
+            // Monitor is not exposed. It only simplifies the API of Accept/Reject/SetError/SetWarning.
+            readonly IActivityMonitor _monitor;
             readonly UserMessageCollector? _userMessages;
             readonly string _inputTypeName;
             readonly CancellationToken _cancellation;
@@ -21,10 +23,12 @@ namespace CK.Poco.Mixer
             internal object? _acceptInfo;
             RejectReason _rejectReason;
 
-            internal AcceptContext( UserMessageCollector? userMessages,
+            internal AcceptContext( IActivityMonitor monitor,
+                                    UserMessageCollector? userMessages,
                                     string inputTypeName,
                                     CancellationToken cancellation )
             {
+                _monitor = monitor;
                 _userMessages = userMessages;
                 _inputTypeName = inputTypeName;
                 _cancellation = cancellation;
@@ -66,6 +70,30 @@ namespace CK.Poco.Mixer
                 _winner = null;
                 _acceptInfo = null;
                 _rejectReason = reason;
+            }
+
+            internal void Reject( BasePocoMixer mixer, Exception ex )
+            {
+                // This will add a user message with the status change.
+                Reject( mixer, RejectReason.Error );
+                // This will log the exception and append it to the user messages.
+                EmitError( _monitor, _userMessages, _input, mixer, ex );
+            }
+
+            /// <summary>
+            /// This always log the input, even if exception is null.
+            /// If exception and userMessages are not null, the exception is appended to the user messages.
+            /// </summary>
+            internal static void EmitError( IActivityMonitor monitor, UserMessageCollector? userMessages, IPoco input, BasePocoMixer mixer, Exception? ex )
+            {
+                using( monitor.OpenError( $"Mixer '{mixer.Configuration.Name}' error while processing '{((IPocoGeneratedClass)input).Factory.Name}'.", ex ) )
+                {
+                    monitor.Trace( input.ToString()! );
+                }
+                if( ex != null )
+                {
+                    userMessages?.AppendErrors( ex );
+                }
             }
 
             /// <summary>

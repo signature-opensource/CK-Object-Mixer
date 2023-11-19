@@ -10,9 +10,7 @@ namespace CK.Poco.Mixer
     /// The root abstraction is configured by an immutable configuration and can accept or reject 
     /// a IPoco and process it to produce any number of Poco instances.
     /// <para>
-    /// Instances are are used by a single mix session: they can keep states and if they implement
-    /// <see cref="IDisposable"/> or <see cref="IAsyncDisposable"/> their dispose method will be
-    /// called at the end of the session.
+    /// Only <see cref="BasePocoMixer{TConfiguration}"/> can be used as a base class. 
     /// </para>
     /// </summary>
     public abstract partial class BasePocoMixer
@@ -20,11 +18,7 @@ namespace CK.Poco.Mixer
         internal readonly PocoMixerConfiguration _configuration;
         [AllowNull] internal readonly PocoDirectory _pocoDirectory;
 
-        /// <summary>
-        /// Initializes a new <see cref="BasePocoMixer"/>.
-        /// </summary>
-        /// <param name="configuration">The required configuration.</param>
-        protected BasePocoMixer( PocoMixerConfiguration configuration )
+        private protected BasePocoMixer( PocoMixerConfiguration configuration )
         {
             _configuration = configuration;
         }
@@ -36,7 +30,7 @@ namespace CK.Poco.Mixer
 
         /// <summary>
         /// Sets the <see cref="AcceptContext.Winner"/> to be this mixer with an optional state that will
-        /// be provided to <see cref="ProcessAsync(IActivityMonitor, ProcessContext)"/>
+        /// be provided to <see cref="DoProcessAsync(IActivityMonitor, ProcessContext)"/>
         /// </summary>
         /// <param name="context">The current context.</param>
         /// <param name="acceptInfo">Optional state for the processing step.</param>
@@ -51,6 +45,14 @@ namespace CK.Poco.Mixer
         protected void Reject( AcceptContext context, RejectReason reason ) => context.Reject( this, reason );
 
         /// <summary>
+        /// Rejects the current context because of an exception.
+        /// The exception is logged monitor and added to the user messages if a collector is available.
+        /// </summary>
+        /// <param name="context">The current context.</param>
+        /// <param name="ex">The exception.</param>
+        protected void Reject( AcceptContext context, Exception ex ) => context.Reject( this, ex );
+
+        /// <summary>
         /// Must call <see cref="Accept(AcceptContext, object?)"/> or <see cref="Reject(AcceptContext, RejectReason)"/>.
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
@@ -58,14 +60,8 @@ namespace CK.Poco.Mixer
         /// <returns>The awaitable.</returns>
         public abstract ValueTask AcceptAsync( IActivityMonitor monitor, AcceptContext context );
 
-        /// <summary>
-        /// Processes a previously accepted <see cref="ProcessContext.Input"/> by transforming it into 0 or more
-        /// outputs sent to <see cref="ProcessContext.Output(IPoco)"/>.
-        /// </summary>
-        /// <param name="monitor">The monitor to use.</param>
-        /// <param name="context">The process context.</param>
-        /// <returns>The awaitable.</returns>
-        public abstract ValueTask ProcessAsync( IActivityMonitor monitor, ProcessContext context );
+        internal abstract ValueTask DoProcessAsync( IActivityMonitor monitor, ProcessContext context );
+
     }
 
 }
