@@ -11,7 +11,7 @@
     <Compile Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CK.Configuration" Version="0.2.1--0011-develop" />
+    <PackageReference Include="CK.Configuration" Version="0.2.1--0012-develop" />
     <PackageReference Include="CK.Globalization" Version="0.3.1--0004-develop" />
   </ItemGroup>
 </Project>
