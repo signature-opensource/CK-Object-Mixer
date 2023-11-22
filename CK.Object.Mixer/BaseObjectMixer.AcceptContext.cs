@@ -3,49 +3,49 @@ using System.Threading;
 using System.Diagnostics.CodeAnalysis;
 using System;
 
-namespace CK.Poco.Mixer
+namespace CK.Object.Mixer
 {
-    public abstract partial class BasePocoMixer
+    public abstract partial class BaseObjectMixer
     {
         /// <summary>
         /// Context provided to <see cref="AcceptAsync(IActivityMonitor, AcceptContext)"/>.
         /// </summary>
         public sealed class AcceptContext
         {
-            [AllowNull] IPoco _input;
+            [AllowNull] object _input;
             // Monitor is not exposed. It only simplifies the API of Accept/Reject/SetError/SetWarning.
             readonly IActivityMonitor _monitor;
             readonly UserMessageCollector? _userMessages;
-            readonly string _inputTypeName;
+            readonly ObjectMixerFactory _factory;
             readonly CancellationToken _cancellation;
-            internal BasePocoMixer? _winner;
-            internal BasePocoMixer? _culprit;
+            internal BaseObjectMixer? _winner;
+            internal BaseObjectMixer? _culprit;
             internal object? _acceptInfo;
             RejectReason _rejectReason;
 
             internal AcceptContext( IActivityMonitor monitor,
                                     UserMessageCollector? userMessages,
-                                    string inputTypeName,
+                                    ObjectMixerFactory factory,
                                     CancellationToken cancellation )
             {
                 _monitor = monitor;
                 _userMessages = userMessages;
-                _inputTypeName = inputTypeName;
+                _factory = factory;
                 _cancellation = cancellation;
             }
 
-            internal void Initialize( IPoco input ) => _input = input;
+            internal void Initialize( object input ) => _input = input;
 
-            internal void Accept( BasePocoMixer mixer, object? acceptInfo )
+            internal void Accept( BaseObjectMixer mixer, object? acceptInfo )
             {
-                _userMessages?.Info( $"Accepted by '{mixer.Configuration.Name}'." );
+                _userMessages?.Info( $"Accepted by '{mixer.Configuration.Configuration.Path}'." );
                 _culprit = null;
                 _winner = mixer;
                 _acceptInfo = acceptInfo;
                 _rejectReason = RejectReason.None;
             }
 
-            internal void Reject( BasePocoMixer mixer, RejectReason reason )
+            internal void Reject( BaseObjectMixer mixer, RejectReason reason )
             {
                 if( _rejectReason == reason ) return;
                 if( _userMessages != null )
@@ -54,16 +54,16 @@ namespace CK.Poco.Mixer
                     {
                         if( reason == RejectReason.None )
                         {
-                            _userMessages.Info( $"Previous decision canceled by '{mixer.Configuration.Name}'." );
+                            _userMessages.Info( $"Previous decision canceled by '{_factory.GetMixerName( mixer.Configuration )}'." );
                         }
                         else
                         {
-                            _userMessages.Info( $"Previous decision rejected by '{mixer.Configuration.Name}' with reason '{reason}'." );
+                            _userMessages.Info( $"Previous decision rejected by '{_factory.GetMixerName( mixer.Configuration )}' with reason '{reason}'." );
                         }
                     }
                     else
                     {
-                        _userMessages.Info( $"Rejected by '{mixer.Configuration.Name}' with reason '{reason}'." );
+                        _userMessages.Info( $"Rejected by '{_factory.GetMixerName( mixer.Configuration )}' with reason '{reason}'." );
                     }
                 }
                 _culprit = mixer;
@@ -72,21 +72,26 @@ namespace CK.Poco.Mixer
                 _rejectReason = reason;
             }
 
-            internal void Reject( BasePocoMixer mixer, Exception ex )
+            internal void Reject( BaseObjectMixer mixer, Exception ex )
             {
                 // This will add a user message with the status change.
                 Reject( mixer, RejectReason.Error );
                 // This will log the exception and append it to the user messages.
-                EmitError( _monitor, _userMessages, _input, mixer, ex );
+                EmitError( _monitor, _factory, _userMessages, _input, mixer, ex );
             }
 
             /// <summary>
             /// This always log the input, even if exception is null.
             /// If exception and userMessages are not null, the exception is appended to the user messages.
             /// </summary>
-            internal static void EmitError( IActivityMonitor monitor, UserMessageCollector? userMessages, IPoco input, BasePocoMixer mixer, Exception? ex )
+            internal static void EmitError( IActivityMonitor monitor,
+                                            ObjectMixerFactory factory,
+                                            UserMessageCollector? userMessages,
+                                            object input,
+                                            BaseObjectMixer mixer,
+                                            Exception? ex )
             {
-                using( monitor.OpenError( $"Mixer '{mixer.Configuration.Name}' error while processing '{((IPocoGeneratedClass)input).Factory.Name}'.", ex ) )
+                using( monitor.OpenError( $"Mixer '{factory.GetMixerName( mixer._configuration )}' error while processing '{factory.GetDisplayName( input )}'.", ex ) )
                 {
                     monitor.Trace( input.ToString()! );
                 }
@@ -99,12 +104,12 @@ namespace CK.Poco.Mixer
             /// <summary>
             /// Gets the input to accept or reject.
             /// </summary>
-            public IPoco Input => _input;
+            public object Input => _input;
 
             /// <summary>
-            /// Gets the name that describes the type of the input: the target type's <see cref="Type.FullName"/>.
+            /// Gets the mixer factory.
             /// </summary>
-            public string InputTypeName => _inputTypeName; 
+            public ObjectMixerFactory Factory => _factory; 
 
             /// <summary>
             /// Gets the optional user message collector.
@@ -112,7 +117,7 @@ namespace CK.Poco.Mixer
             public UserMessageCollector? UserMessages => _userMessages;
 
             /// <summary>
-            /// Gets the cancellation token..
+            /// Gets the cancellation token.
             /// </summary>
             public CancellationToken Cancellation => _cancellation;
 
@@ -125,7 +130,7 @@ namespace CK.Poco.Mixer
             /// <summary>
             /// Gets the non null winner if <see cref="IsAcceptedSuccessfully"/> is true.
             /// </summary>
-            public BasePocoMixer? Winner => _winner;
+            public BaseObjectMixer? Winner => _winner;
 
             /// <summary>
             /// Gets whether the input has been accepted, either successfuly or with an error

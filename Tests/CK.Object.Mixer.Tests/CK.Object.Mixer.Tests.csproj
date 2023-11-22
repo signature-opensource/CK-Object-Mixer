@@ -3,6 +3,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <LangVersion>11</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.Testing.Monitoring" Version="8.1.1--0005-develop" />
@@ -11,6 +12,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CK.Poco.Mixer\CK.Poco.Mixer.csproj" />
+    <ProjectReference Include="..\..\CK.Object.Mixer\CK.Object.Mixer.csproj" />
   </ItemGroup>
 </Project>

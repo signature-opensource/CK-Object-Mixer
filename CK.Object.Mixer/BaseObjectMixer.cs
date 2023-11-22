@@ -4,21 +4,20 @@ using System.Threading;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CK.Poco.Mixer
+namespace CK.Object.Mixer
 {
     /// <summary>
     /// The root abstraction is configured by an immutable configuration and can accept or reject 
-    /// a IPoco and process it to produce any number of Poco instances.
+    /// an object and process it to produce any number of object instances.
     /// <para>
-    /// Only <see cref="BasePocoMixer{TConfiguration}"/> can be used as a base class. 
+    /// Only <see cref="BaseObjectMixer{TConfiguration}"/> can be used as a base class. 
     /// </para>
     /// </summary>
-    public abstract partial class BasePocoMixer
+    public abstract partial class BaseObjectMixer
     {
-        internal readonly PocoMixerConfiguration _configuration;
-        [AllowNull] internal readonly PocoDirectory _pocoDirectory;
+        readonly ObjectMixerConfiguration _configuration;
 
-        private protected BasePocoMixer( PocoMixerConfiguration configuration )
+        private protected BaseObjectMixer( ObjectMixerConfiguration configuration )
         {
             _configuration = configuration;
         }
@@ -26,7 +25,7 @@ namespace CK.Poco.Mixer
         /// <summary>
         /// Gets the configuration.
         /// </summary>
-        public PocoMixerConfiguration Configuration => _configuration;
+        public ObjectMixerConfiguration Configuration => _configuration;
 
         /// <summary>
         /// Sets the <see cref="AcceptContext.Winner"/> to be this mixer with an optional state that will
@@ -58,9 +57,22 @@ namespace CK.Poco.Mixer
         /// <param name="monitor">The monitor to use.</param>
         /// <param name="context">The accept context.</param>
         /// <returns>The awaitable.</returns>
-        public abstract ValueTask AcceptAsync( IActivityMonitor monitor, AcceptContext context );
+        internal protected abstract ValueTask AcceptAsync( IActivityMonitor monitor, AcceptContext context );
 
-        internal abstract ValueTask DoProcessAsync( IActivityMonitor monitor, ProcessContext context );
+        /// <summary>
+        /// Processes a previously accepted <see cref="ProcessContext.Input"/> by transforming it into 0 or more
+        /// outputs sent to <see cref="ProcessContext.Output(object)"/>.
+        /// <para>
+        /// Errors must be signaled by calling <see cref="ProcessContext.SetError(IActivityMonitor, System.Exception?)"/>.
+        /// </para>
+        /// <para>
+        /// Note that this method can route the call to another mixer with <see cref="ProcessContext.RouteAsync(IActivityMonitor, BaseObjectMixer)"/>.
+        /// </para>
+        /// </summary>
+        /// <param name="monitor">The monitor to use.</param>
+        /// <param name="context">The process context.</param>
+        /// <returns>The awaitable.</returns>
+        internal protected abstract ValueTask ProcessAsync( IActivityMonitor monitor, ProcessContext context );
 
     }
 

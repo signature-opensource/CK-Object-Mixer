@@ -6,23 +6,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace CK.Poco.Mixer
+namespace CK.Object.Mixer
 {
     /// <summary>
-    /// Composite of multiple <see cref="BasePocoMixer"/>.
+    /// Composite of multiple <see cref="BaseObjectMixer"/>.
     /// <para>
     /// Subordinate mixers' are called in depth-first order.
     /// </para>
     /// <para>
-    /// This class may be specialized to override <see cref="AcceptHookAsync(IActivityMonitor, BasePocoMixer.AcceptContext)"/>,
-    /// <see cref="AfterAcceptAsync(IActivityMonitor, BasePocoMixer.AcceptContext)"/> and <see cref="DoProcessAsync(IActivityMonitor, BasePocoMixer.ProcessContext)"/>.
+    /// This class may be specialized to override <see cref="AcceptHookAsync(IActivityMonitor, BaseObjectMixer.AcceptContext)"/>,
+    /// <see cref="AfterAcceptAsync(IActivityMonitor, BaseObjectMixer.AcceptContext)"/> and <see cref="DoProcessAsync(IActivityMonitor, BaseObjectMixer.ProcessContext)"/>.
     /// </para>
     /// </summary>
-    public class CompositePocoMixer : BasePocoMixer<CompositePocoMixerConfiguration>
+    public class CompositeObjectMixer : BaseObjectMixer<CompositeObjectMixerConfiguration>
     {
-        readonly ImmutableArray<BasePocoMixer> _children;
+        readonly ImmutableArray<BaseObjectMixer> _children;
 
-        internal CompositePocoMixer( CompositePocoMixerConfiguration configuration, ImmutableArray<BasePocoMixer> mixers )
+        internal CompositeObjectMixer( CompositeObjectMixerConfiguration configuration, ImmutableArray<BaseObjectMixer> mixers )
             : base( configuration )
         {
             _children = mixers;
@@ -36,9 +36,9 @@ namespace CK.Poco.Mixer
         /// <param name="monitor">The monitor to use.</param>
         /// <param name="context">The accept context.</param>
         /// <returns>The awaitable.</returns>
-        public override async ValueTask AcceptAsync( IActivityMonitor monitor, AcceptContext context )
+        protected internal override async ValueTask AcceptAsync( IActivityMonitor monitor, AcceptContext context )
         {
-            using var g = context.UserMessages?.OpenInfo( $"Input submitted to '{Configuration.Name}'." );
+            using var g = context.UserMessages?.OpenInfo( $"Input submitted to '{context.Factory.GetMixerName( Configuration )}'." );
             await AcceptHookAsync( monitor, context ).ConfigureAwait( false );
             if( context.IsAccepted ) return;
             foreach( var c in _children )
@@ -79,7 +79,7 @@ namespace CK.Poco.Mixer
         /// <param name="monitor">The monitor to use.</param>
         /// <param name="context">The context.</param>
         /// <returns>The awaitable.</returns>
-        protected override ValueTask ProcessAsync( IActivityMonitor monitor, ProcessContext context ) => default;
+        protected internal override ValueTask ProcessAsync( IActivityMonitor monitor, ProcessContext context ) => default;
     }
 
 }

@@ -2,44 +2,41 @@ using CK.Core;
 using System.Threading;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
-namespace CK.Poco.Mixer
+namespace CK.Object.Mixer
 {
-    public abstract partial class BasePocoMixer
+    public abstract partial class BaseObjectMixer
     {
         /// <summary>
         /// Context provided to <see cref="DoProcessAsync(IActivityMonitor, ProcessContext)"/>.
         /// </summary>
         public sealed class ProcessContext
         {
-            [AllowNull] IPoco _input;
+            [AllowNull] object _input;
             [AllowNull] UserMessageCollector? _userMessages;
             [AllowNull] CancellationToken _cancellation;
+            [AllowNull] ObjectMixerFactory _factory;
             [AllowNull] object? _acceptInfo;
-            [AllowNull] Action<IPoco> _output;
-            [AllowNull] BasePocoMixer _mixer;
+            [AllowNull] Action<ProcessContext, object> _output;
+            [AllowNull] BaseObjectMixer _mixer;
             bool _hasError;
 
-            internal void Initialize( AcceptContext a, Action<IPoco> output )
+            internal void Initialize( AcceptContext a, Action<ProcessContext, object> output )
             {
                 _input = a.Input;
                 _userMessages = a.UserMessages;
                 _cancellation = a.Cancellation;
+                _factory = a.Factory;
                 _acceptInfo = a._acceptInfo;
                 _output = output;
-            }
-
-            internal BasePocoMixer SetCurrentMixer( BasePocoMixer mixer )
-            {
-                var previous = _mixer;
-                _mixer = mixer;
-                return previous;
+                _mixer = a._winner;
             }
 
             /// <summary>
             /// Gets the input that must be processed.
             /// </summary>
-            public IPoco Input => _input;
+            public object Input => _input;
 
             /// <summary>
             /// Gets the optional user message collector.
@@ -52,7 +49,7 @@ namespace CK.Poco.Mixer
             public CancellationToken Cancellation => _cancellation;
 
             /// <summary>
-            /// Gets the state that <see cref="BasePocoMixer.Accept(AcceptContext, object?)"/>
+            /// Gets the state that <see cref="BaseObjectMixer.Accept(AcceptContext, object?)"/>
             /// may have set.
             /// </summary>
             public object? AcceptInfo => _acceptInfo;
@@ -71,11 +68,11 @@ namespace CK.Poco.Mixer
             {
                 // This will always log, even if error is null and if error is not null,
                 // the error is appended to the user messages (if any).
-                AcceptContext.EmitError( monitor, _userMessages, _input, _mixer, error );
+                AcceptContext.EmitError( monitor, _factory, _userMessages, _input, _mixer, error );
                 // When error is null, we ensure that at least one error user message has been emitted.
                 if( error == null && !_hasError && _userMessages != null )
                 {
-                    _userMessages.Error( $"Mixer '{_mixer.Configuration.Name}' encountered an error." );
+                    _userMessages.Error( $"Mixer '{_factory.GetMixerName( _mixer.Configuration )}' encountered an error." );
                 }
                 _hasError = true;
             }
@@ -85,12 +82,11 @@ namespace CK.Poco.Mixer
             /// a subsequent processing.
             /// </summary>
             /// <param name="output">The result.</param>
-            public void Output( IPoco output )
+            public void Output( object output )
             {
                 Throw.CheckNotNullArgument( output );
-                _output( output );
+                _output( this, output );
             }
-
         }
     }
 

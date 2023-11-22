@@ -1,7 +1,7 @@
-namespace CK.Poco.Mixer
+namespace CK.Object.Mixer
 {
     /// <summary>
-    /// Qualifies the reason why the a mixer rejected an input.
+    /// Qualifies the reason why a mixer rejected an input.
     /// </summary>
     public enum RejectReason
     {

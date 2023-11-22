@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CK.Poco.Mixer
+namespace CK.Object.Mixer
 {
-    public class CompositePocoMixerConfiguration : PocoMixerConfiguration
+    public class CompositeObjectMixerConfiguration : ObjectMixerConfiguration
     {
-        readonly IReadOnlyList<PocoMixerConfiguration> _mixers;
+        readonly IReadOnlyList<ObjectMixerConfiguration> _mixers;
 
         /// <summary>
         /// Required constructor.
@@ -17,25 +17,25 @@ namespace CK.Poco.Mixer
         /// <param name="builder">The builder. Can be used to instantiate other children as needed.</param>
         /// <param name="configuration">The configuration for this object.</param>
         /// <param name="strategies">The subordinated items.</param>
-        public CompositePocoMixerConfiguration( IActivityMonitor monitor,
-                                                PolymorphicConfigurationTypeBuilder builder,
-                                                ImmutableConfigurationSection configuration,
-                                                IReadOnlyList<PocoMixerConfiguration> mixers )
+        public CompositeObjectMixerConfiguration( IActivityMonitor monitor,
+                                                  PolymorphicConfigurationTypeBuilder builder,
+                                                  ImmutableConfigurationSection configuration,
+                                                  IReadOnlyList<ObjectMixerConfiguration> mixers )
             : base( monitor, builder, configuration )
         {
             _mixers = mixers;
         }
 
         /// <inheritdoc />
-        public override BasePocoMixer? CreateMixer( IActivityMonitor monitor, IServiceProvider services )
+        public override BaseObjectMixer? CreateMixer( IActivityMonitor monitor, IServiceProvider services )
         {
             var items = CreateMixers( monitor, services );
             return items.Length > 0
-                    ? new CompositePocoMixer( this, items! )
+                    ? new CompositeObjectMixer( this, items! )
                     : null;
         }
 
-        protected ImmutableArray<BasePocoMixer> CreateMixers( IActivityMonitor monitor, IServiceProvider services )
+        protected ImmutableArray<BaseObjectMixer> CreateMixers( IActivityMonitor monitor, IServiceProvider services )
         {
             return _mixers.Select( c => c.CreateMixer( monitor, services ) )
                           .Where( s => s != null )
