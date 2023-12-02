@@ -21,7 +21,7 @@
   <!--</BasicDefinitions>-->
   <!--<StandardProperties>-->
   <PropertyGroup>
-    <RepositoryUrl>https://github.com/Signature-OpenSource/CK-Object-Mixer</RepositoryUrl>
+    <RepositoryUrl>https://github.com/signature-opensource/CK-Object-Mixer</RepositoryUrl>
     <ProductName>CK</ProductName>
     <Company>Signature Code</Company>
     <Authors>Signature Code</Authors>
