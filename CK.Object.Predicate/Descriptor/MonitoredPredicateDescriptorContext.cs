@@ -1,15 +1,12 @@
 using CK.Core;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Runtime.ExceptionServices;
 
 namespace CK.Object.Predicate
 {
     /// <summary>
-    /// Hook context that logs the evaluation details and capture errors.
+    /// Desriptor context that logs the evaluation details and capture errors.
     /// </summary>
-    public class MonitoredPredicateHookContext : PredicateHookContext
+    public class MonitoredPredicateDescriptorContext : PredicateDescriptorContext
     {
         readonly IActivityMonitor _monitor;
         readonly CKTrait? _tags;
@@ -23,10 +20,10 @@ namespace CK.Object.Predicate
         /// <param name="tags">Optional tags for log entries.</param>
         /// <param name="groupLevel">Default group level. Use <see cref="LogLevel.None"/> to not open a group for each predicate.</param>
         /// <param name="userMessageCollector">Optional message collector.</param>
-        public MonitoredPredicateHookContext( IActivityMonitor monitor,
-                                              CKTrait? tags = null,
-                                              LogLevel groupLevel = LogLevel.Trace,
-                                              UserMessageCollector? userMessageCollector = null )
+        public MonitoredPredicateDescriptorContext( IActivityMonitor monitor,
+                                                    CKTrait? tags = null,
+                                                    LogLevel groupLevel = LogLevel.Trace,
+                                                    UserMessageCollector? userMessageCollector = null )
             : base( userMessageCollector ) 
         {
             Throw.CheckNotNullArgument( monitor );
@@ -49,7 +46,7 @@ namespace CK.Object.Predicate
         /// <param name="source">The source predicate.</param>
         /// <param name="o">The object to evaluate.</param>
         /// <returns>True if no error occurred to continue the evaluation, false otherwise.</returns>
-        internal protected override bool OnBeforePredicate( IObjectPredicateHook source, object o )
+        internal protected override bool OnBeforePredicate( ObjectPredicateDescriptor source, object o )
         {
             if( HasError ) return false;
             if( _level != LogLevel.None )
@@ -68,7 +65,7 @@ namespace CK.Object.Predicate
         /// <param name="o">The object.</param>
         /// <param name="ex">The exception raised by the evaluation.</param>
         /// <returns>Always false to prevent the exception to be rethrown.</returns>
-        internal protected override bool OnPredicateError( IObjectPredicateHook source, object o, Exception ex )
+        internal protected override bool OnPredicateError( ObjectPredicateDescriptor source, object o, Exception ex )
         {
             base.OnPredicateError( source, o, ex );
             using( _monitor.OpenError( _tags, $"Predicate '{source.Configuration.ConfigurationPath}' error while processing:", ex ) )
@@ -89,7 +86,7 @@ namespace CK.Object.Predicate
         /// <param name="o">The object.</param>
         /// <param name="result">The evaluated result.</param>
         /// <returns>The <paramref name="result"/>.</returns>
-        internal protected override bool OnAfterPredicate( IObjectPredicateHook source, object o, bool result )
+        internal protected override bool OnAfterPredicate( ObjectPredicateDescriptor source, object o, bool result )
         {
             if( _level != LogLevel.None )
             {

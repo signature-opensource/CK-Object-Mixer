@@ -74,7 +74,7 @@ namespace CK.Object.Predicate.Tests
 
                 var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreateAsyncPredicate( TestHelper.Monitor );
+                var f = fC.CreateAsyncPredicate();
                 Throw.DebugAssert( f != null );
                 (await f( "This one will always be the Sync one" )).Should().BeTrue();
                 (await f( "NOT" + "HERE!" )).Should().BeFalse();
@@ -142,7 +142,7 @@ namespace CK.Object.Predicate.Tests
                 }
                 var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreateAsyncPredicate( TestHelper.Monitor );
+                var f = fC.CreateAsyncPredicate();
                 Throw.DebugAssert( f != null );
                 (await f( "This one will always be the Sync one" )).Should().BeTrue();
                 (await f( "NOT" + "HERE!" )).Should().BeFalse();

@@ -45,32 +45,11 @@ namespace CK.Object.Predicate
         /// <returns>A configured object predicate or null for an empty predicate.</returns>
         public abstract Func<object, bool>? CreatePredicate( IServiceProvider services );
 
-        /// <summary>
-        /// Definite relay to <see cref="CreateHook(PredicateHookContext, IServiceProvider)"/>.
-        /// </summary>
-        /// <param name="context">The hook context.</param>
-        /// <param name="services">Services that may be required for some (complex) predicates.</param>
-        /// <returns>A wrapper bound to the hook context or null for an empty predicate.</returns>
-        public sealed override IObjectPredicateHook? CreateAsyncHook( PredicateHookContext context, IServiceProvider services )
-        {
-            return CreateHook( context, services );
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ObjectPredicateHook"/> with this configuration and a predicate obtained by
-        /// calling <see cref="CreatePredicate(IServiceProvider)"/>.
-        /// <para>
-        /// This should be overridden if this predicate relies on other predicates in order to hook all of them.
-        /// Failing to do so will hide some predicates to the evaluation hook.
-        /// </para>
-        /// </summary>
-        /// <param name="context">The hook context.</param>
-        /// <param name="services">Services that may be required for some (complex) predicates.</param>
-        /// <returns>A wrapper bound to the hook context or null for an empty predicate.</returns>
-        public virtual ObjectPredicateHook? CreateHook( PredicateHookContext context, IServiceProvider services )
+        /// <inheritdoc />
+        public override ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
         {
             var p = CreatePredicate( services );
-            return p != null ? new ObjectPredicateHook( context, this, p ) : null;
+            return p != null ? new ObjectPredicateDescriptor( context, this, p ) : null;
         }
 
         /// <summary>

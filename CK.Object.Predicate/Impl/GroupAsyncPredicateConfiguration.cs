@@ -53,8 +53,6 @@ namespace CK.Object.Predicate
 
         public int AtMost => _atMost;
 
-        int IGroupPredicateDescription.PredicateCount => _predicates.Length;
-
         public IReadOnlyList<ObjectAsyncPredicateConfiguration> Predicates => _predicates;
 
         public override ObjectAsyncPredicateConfiguration SetPlaceholder( IActivityMonitor monitor,
@@ -104,15 +102,14 @@ namespace CK.Object.Predicate
                     : @this;
         }
 
-        public override IObjectPredicateHook? CreateAsyncHook( PredicateHookContext context, IServiceProvider services )
+        public override ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
         {
-            ImmutableArray<IObjectPredicateHook> items = _predicates.Select( c => c.CreateAsyncHook( context, services ) )
-                                                                    .Where( s => s != null )
-                                                                    .ToImmutableArray()!;
+            ImmutableArray<ObjectPredicateDescriptor> items = _predicates.Select( c => c.CreateDescriptor( context, services ) )
+                                                                         .Where( d => d != null )
+                                                                         .ToImmutableArray()!;
             if( items.Length == 0 ) return null;
             if( items.Length == 1 ) return items[0];
-            if( items.Length == 2 ) return new AsyncPair( context, this, items[0], items[1], Single ? 2 : Any ? 1 : 0 );
-            return new GroupAsyncPredicateHook( context, this, items );
+            return new ObjectPredicateDescriptor( context, this, items );
         }
 
         public override Func<object,ValueTask<bool>>? CreateAsyncPredicate( IServiceProvider services )

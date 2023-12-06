@@ -11,26 +11,23 @@ namespace CK.Object.Predicate
         /// <see cref="ObjectAsyncPredicateConfiguration.CreateAsyncPredicate(IServiceProvider)"/> is called
         /// with an empty <see cref="IServiceProvider"/>.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
         /// <returns>A configured predicate or null for an empty predicate.</returns>
-        public static Func<object, ValueTask<bool>>? CreateAsyncPredicate( this ObjectAsyncPredicateConfiguration @this, IActivityMonitor monitor )
+        public static Func<object, ValueTask<bool>>? CreateAsyncPredicate( this ObjectAsyncPredicateConfiguration @this )
         {
             return @this.CreateAsyncPredicate( EmptyServiceProvider.Instance );
         }
 
         /// <summary>
-        /// Creates an <see cref="IObjectPredicateHook"/> that doesn't require any external service to do its job.
-        /// <see cref="ObjectAsyncPredicateConfiguration.CreateAsyncHook(PredicateHookContext, IServiceProvider)"/>
+        /// Creates an <see cref="ObjectPredicateDescriptor"/> that doesn't require any external service to do its job.
+        /// <see cref="ObjectAsyncPredicateConfiguration.CreateDescriptor(PredicateDescriptorContext, IServiceProvider)"/>
         /// is called with an empty <see cref="IServiceProvider"/>.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
         /// <param name="context">The hook context.</param>
         /// <returns>A configured wrapper bound to the hook context or null for an empty predicate.</returns>
-        public static IObjectPredicateHook? CreateAsyncHook( this ObjectAsyncPredicateConfiguration @this, IActivityMonitor monitor, PredicateHookContext context )
+        public static ObjectPredicateDescriptor? CreateDescriptor( this ObjectAsyncPredicateConfiguration @this, PredicateDescriptorContext context )
         {
-            return @this.CreateAsyncHook( context, EmptyServiceProvider.Instance );
+            return @this.CreateDescriptor( context, EmptyServiceProvider.Instance );
         }
-
 
         /// <summary>
         /// Creates a synchronous predicate that doesn't require any external service to do its job.
@@ -42,19 +39,6 @@ namespace CK.Object.Predicate
         public static Func<object, bool>? CreatePredicate( this ObjectPredicateConfiguration @this, IActivityMonitor monitor )
         {
             return @this.CreatePredicate( EmptyServiceProvider.Instance );
-        }
-
-        /// <summary>
-        /// Creates an <see cref="ObjectPredicateHook"/> that doesn't require any external service to do its job.
-        /// <see cref="ObjectPredicateConfiguration.CreateHook(PredicateHookContext, IServiceProvider)"/> is
-        /// called with an empty <see cref="IServiceProvider"/>.
-        /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
-        /// <param name="context">The hook context.</param>
-        /// <returns>A wrapper bound to the hook context or null for an empty predicate.</returns>
-        public static ObjectPredicateHook? CreateHook( this ObjectPredicateConfiguration @this, IActivityMonitor monitor, PredicateHookContext context )
-        {
-            return @this.CreateHook( context, EmptyServiceProvider.Instance );
         }
 
         internal sealed class EmptyServiceProvider : IServiceProvider

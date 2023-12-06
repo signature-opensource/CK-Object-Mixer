@@ -20,14 +20,14 @@ namespace CK.Object.Predicate
             // There is room for improvements here. Instead of simple async choice here, we may split a group in multiple groups,
             // some being sync and some being async and wrap them in a parent group.
             //
-            // The idea is to evaluate the fatser sync before the slower async (slower is because of the await state machine).
+            // The idea is to evaluate the faster sync before the slower async (slower is because of the await state machine).
             //
             // - All would be a "And" pair with a first "All" synchronous group and its second with a "All" asynchronous group.
             // - Any would be a "Or" pair with a first "Any" synchronous group and its second with a "Any" asynchronous group.
             // - Single is less interesting because all predicates must be evaluated. But by grouping sync together and then async
             //   this is still a good thing since we may conclude earlier.
             //
-            // Instead of creating intermediate groups (whose hooks would need to be handled carefully if we don't want this restructuration
+            // Instead of creating intermediate groups (whose descriptors would need to be handled carefully if we don't want this restructuration
             // to leak to the end user), a simpler way is to enhance the GroupAsyncPredicateConfiguration:
             // - we can sort the predicates with the sync first and then the async ones and tell the async group about these 2 sub groups.
             // - It can then optimize its work.
@@ -62,7 +62,7 @@ namespace CK.Object.Predicate
                         sRight = right.Synchronous;
                         if( sRight != null )
                         {
-                            return new AndSyncPredicate( configurationPath, sLeft, sRight );
+                            return new AndPredicate( configurationPath, sLeft, sRight );
                         }
                         return new AndHybridPredicate( configurationPath, sLeft, right, false );
                     }

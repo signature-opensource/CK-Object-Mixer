@@ -46,7 +46,7 @@ namespace CK.Object.Predicate.Tests
             {
                 var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config.GetRequiredSection( "Condition" ) );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreateAsyncPredicate( TestHelper.Monitor );
+                var f = fC.CreateAsyncPredicate();
                 Throw.DebugAssert( f != null );
                 (await f( this )).Should().Be( always );
             }
@@ -122,7 +122,7 @@ namespace CK.Object.Predicate.Tests
 
                 fC.GetType().Name.Should().Be( "GroupPredicateConfiguration", "Also the synchronous group because its predicate is sync." );
 
-                var f = fC.CreateAsyncPredicate( TestHelper.Monitor );
+                var f = fC.CreateAsyncPredicate();
                 Throw.DebugAssert( f != null );
                 (await f( this )).Should().BeTrue();
             }
@@ -224,7 +224,7 @@ namespace CK.Object.Predicate.Tests
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
 
-            var f = fC.CreateAsyncPredicate( TestHelper.Monitor );
+            var f = fC.CreateAsyncPredicate();
             Throw.DebugAssert( f != null );
             (await f( 0 )).Should().Be( false );
             (await f( "Ax" )).Should().Be( false );
@@ -243,7 +243,7 @@ namespace CK.Object.Predicate.Tests
             var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
 
-            var hook = new MonitoredPredicateHookContext( TestHelper.Monitor );
+            var hook = new MonitoredPredicateDescriptorContext( TestHelper.Monitor );
 
             var f = fC.CreateHook( TestHelper.Monitor, hook );
             Throw.DebugAssert( f != null );
@@ -264,7 +264,7 @@ namespace CK.Object.Predicate.Tests
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
 
-            var hook = new MonitoredPredicateHookContext( TestHelper.Monitor );
+            var hook = new MonitoredPredicateDescriptorContext( TestHelper.Monitor );
 
             var f = fC.CreateAsyncHook( TestHelper.Monitor, hook );
             Throw.DebugAssert( f != null );
@@ -304,7 +304,7 @@ namespace CK.Object.Predicate.Tests
             {
                 var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreateAsyncPredicate( TestHelper.Monitor );
+                var f = fC.CreateAsyncPredicate();
                 Throw.DebugAssert( f != null );
                 (await f( "With Hello! fails." )).Should().BeFalse();
                 (await f( "Without succeeds." )).Should().BeTrue();
@@ -347,7 +347,7 @@ namespace CK.Object.Predicate.Tests
             {
                 var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreateAsyncPredicate( TestHelper.Monitor );
+                var f = fC.CreateAsyncPredicate();
                 Throw.DebugAssert( f != null );
                 (await f( this )).Should().BeFalse();
                 (await f( 0 )).Should().BeFalse();

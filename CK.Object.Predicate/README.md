@@ -249,49 +249,26 @@ There is a little bit more complexity involved for Groups: when an async group i
 a factory method is used (instead of the constructor): this factory method returns a sync group
 if all the predicates are sync. An async group is created only if it's necessary.
 
-## Hooks for observability.
+## Descriptors for observability.
 
 Created predicates are pure functions. When they are called, only the final result is observable, the decisions
 taken are the result of the configuration without any explanations. Instead of pure functions, a predicate
-object can be created from a configuration: their `Evaluate( object )` and `EvaluateAsync( object )` enables the
-decisions to be analyzed.
+object can be created from a configuration: their `EvaluateSync( object )` and `EvaluateAsync( object )`
+enables the decisions to be analyzed.
 
-The [`PredicateHookContext`](Hooks/PredicateHookContext.cs) enables to create wrapper rather than pure predicate
-functions:
-```csharp
-public abstract class ObjectPredicateConfiguration : IObjectPredicateConfiguration
-{
-  /* ... */
+The [`PredicateDescriptionContext`](Descriptor/PredicateDescriptionContext.cs) enables to create descriptor objects
+rather than pure predicate functions.
 
-  /// <summary>
-  /// Creates a <see cref="ObjectPredicateHook"/> with this configuration and a predicate obtained by
-  /// calling <see cref="CreatePredicate(IActivityMonitor, IServiceProvider)"/>.
-  /// <para>
-  /// This should be overridden if this predicate relies on other predicates in order to hook all of them.
-  /// Failing to do so will hide some predicates to the evaluation hook.
-  /// </para>
-  /// </summary>
-  /// <param name="monitor">The monitor that must be used to signal errors.</param>
-  /// <param name="context">The hook context.</param>
-  /// <param name="services">The services.</param>
-  /// <returns>A wrapper bound to the hook context or null for an empty predicate.</returns>
-  public virtual ObjectPredicateHook? CreateHook( IActivityMonitor monitor, PredicateHookContext context, IServiceProvider services )
-  {
-      var p = CreatePredicate( monitor, services );
-      return p != null ? new ObjectPredicateHook( context, this, p ) : null;
-  }
-}
-```
-[`ObjectPredicateHook`](Hooks/Sync/ObjectPredicateHook.cs) (and [`ObjectAsyncPredicateHook`](Hooks/Async/ObjectAsyncPredicateHook.cs))
-give access to the predicate's configuration and when they are [`GroupPredicateHook`](Hooks/Sync/ObjectPredicateHook.cs)
-(and [`GroupAsyncPredicateHook`](Hooks/Async/GroupAsyncPredicateHook.cs)) they expose their subordinated
-items: the whole resolved structure can be explored.
+[`ObjectPredicateDescriptor`](Descriptor/ObjectPredicateDescriptor.cs)
+give access to the predicate's configuration, whether it is synchronous and
+whether it is a group or a simple predicate. If it is a group, the descriptors of the subordinated predicates
+are exposed: the whole resolved structure can be explored.
 
-Note that hook follow the same "empty predicate" null management: a null hook is empty and should
-be ignored.
+Note that descriptors follow the same "empty predicate" null management: a null descriptor is "empty". It should
+be ignored when obtained and doesn't appear in a descriptor structure.
 
-The specialized [`MonitoredPredicateHookContext`](Hooks/MonitoredPredicateHookContext.cs) logs all the evaluator
-along with their result and captures exceptions that evaluation may throw.
+The specialized [`MonitoredPredicateDescriptorContext`](Descriptor/MonitoredPredicateDescriptorContext.cs) logs all
+the evaluatuions along with their result and captures exceptions that evaluation may throw.
 
 Sample usage (the evaluation of "Bzy" is logged into the `TestHelper.Monitor`):
 ```csharp
@@ -305,19 +282,19 @@ public void complex_configuration_tree_with_EvaluationHook()
     var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
     Throw.DebugAssert( fC != null );
 
-    var context = new MonitoredPredicateHookContext( TestHelper.Monitor );
+    var context = new MonitoredPredicateDescriptorContext( TestHelper.Monitor );
 
-    var f = fC.CreateHook( TestHelper.Monitor, context );
+    var f = fC.CreateDescriptor( context );
     f.Evaluate( "Bzy" ).Should().Be( true );
 }
 ```
 
-Because these hooks have the primary purpose to "explain" the configured process:
-- The `PredicateHookContext` has an optional `UserMessageCollector` that can be used to emit
+Because these descriptors have the primary purpose to "explain" the configured process:
+- The `PredicateDescriptorContext` has an optional `UserMessageCollector` that can be used to emit
   translatable error, warnings and informations.
-- the `MonitoredPredicateHookContext` (that adds a monitor) should be enough in practice.
+- the `MonitoredPredicateDescriptorContext` (that adds a monitor) should be enough in practice.
 
-> It is planned to add a `void Describe( UserMessageCollector description )` to the `ObjectPredicateHook`
+> It is planned to add a `void Describe( UserMessageCollector description )` to the `ObjectPredicateDescriptor`
   that will capture a translatable explanation of what it does in a human readable text (that includes
   its configured values).
 

@@ -7,13 +7,13 @@ using System.Runtime.ExceptionServices;
 namespace CK.Object.Predicate
 {
     /// <summary>
-    /// Hook context that can track each evaluation accross a <see cref="ObjectPredicateHook"/> or <see cref="ObjectAsyncPredicateHook"/>.
+    /// Descriptor context that can track each evaluation accross a <see cref="ObjectPredicateHook"/> or <see cref="ObjectAsyncPredicateHook"/>.
     /// <para>
-    /// This base implementation only handles exception thrown by transformation by capturing them in <see cref="Errors"/> and
+    /// This base implementation only handles exception thrown by evaluation by capturing them in <see cref="Errors"/> and
     /// calling <see cref="UserMessageCollector.AppendErrors(Exception, string?, bool?)"/> if a message collector is available.
     /// </para>
     /// </summary>
-    public class PredicateHookContext
+    public class PredicateDescriptorContext
     {
         readonly UserMessageCollector? _userMessageCollector;
         List<ExceptionDispatchInfo>? _errors;
@@ -22,7 +22,7 @@ namespace CK.Object.Predicate
         /// Initializes a new context.
         /// </summary>
         /// <param name="userMessageCollector">Optional message collector.</param>
-        public PredicateHookContext( UserMessageCollector? userMessageCollector )
+        public PredicateDescriptorContext( UserMessageCollector? userMessageCollector )
         {
             _userMessageCollector = userMessageCollector;
         }
@@ -59,7 +59,7 @@ namespace CK.Object.Predicate
         /// <param name="source">The source predicate.</param>
         /// <param name="o">The object to evaluate.</param>
         /// <returns>True to continue the evaluation, false to skip it and return a false result.</returns>
-        internal protected virtual bool OnBeforePredicate( IObjectPredicateHook source, object o ) => !HasError;
+        internal protected virtual bool OnBeforePredicate( ObjectPredicateDescriptor source, object o ) => !HasError;
 
         /// <summary>
         /// Called if the evaluation raised an error.
@@ -76,7 +76,7 @@ namespace CK.Object.Predicate
         /// <param name="o">The object.</param>
         /// <param name="ex">The exception raised by the evaluation.</param>
         /// <returns>True to rethrow the exception, false to swallow it and return a false result.</returns>
-        internal protected virtual bool OnPredicateError( IObjectPredicateHook source, object o, Exception ex )
+        internal protected virtual bool OnPredicateError( ObjectPredicateDescriptor source, object o, Exception ex )
         {
             _userMessageCollector?.AppendErrors( ex );
             CaptureError( ex );
@@ -101,6 +101,6 @@ namespace CK.Object.Predicate
         /// <param name="o">The object.</param>
         /// <param name="result">The evaluated result.</param>
         /// <returns>The <paramref name="result"/>.</returns>
-        internal protected virtual bool OnAfterPredicate( IObjectPredicateHook source, object o, bool result ) => result;
+        internal protected virtual bool OnAfterPredicate( ObjectPredicateDescriptor source, object o, bool result ) => result;
     }
 }

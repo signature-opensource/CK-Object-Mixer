@@ -1,13 +1,15 @@
 using CK.Core;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace CK.Object.Predicate
 {
-    sealed class AndHybridPredicate : ObjectAsyncPredicateConfiguration, IGroupPredicateDescription
+    sealed class AndHybridPredicate : ObjectAsyncPredicateConfiguration, IGroupPredicateConfiguration
     {
-        readonly ObjectPredicateConfiguration _left;
-        readonly ObjectAsyncPredicateConfiguration _right;
+        readonly ImmutableArray<ObjectAsyncPredicateConfiguration> _p;
         readonly bool _revert;
 
         public bool All => true;
@@ -22,18 +24,19 @@ namespace CK.Object.Predicate
 
         public int PredicateCount => 2;
 
+        public IReadOnlyList<ObjectAsyncPredicateConfiguration> Predicates => _p;
+
         public AndHybridPredicate( string configurationPath, ObjectPredicateConfiguration left, ObjectAsyncPredicateConfiguration right, bool revert )
             : base( configurationPath )
         {
-            _left = left;
-            _right = right;
+            _p = ImmutableArray.Create( left, right );
             _revert = revert;
         }
 
         public override Func<object, ValueTask<bool>>? CreateAsyncPredicate( IServiceProvider services )
         {
-            var l = _left.CreatePredicate( services );
-            var r = _right.CreateAsyncPredicate( services );
+            var l = Unsafe.As<ObjectPredicateConfiguration>( _p[0] ).CreatePredicate( services );
+            var r = _p[1].CreateAsyncPredicate( services );
             if( l != null )
             {
                 if( r != null )
@@ -47,20 +50,20 @@ namespace CK.Object.Predicate
             return r;
         }
 
-        public override IObjectPredicateHook? CreateAsyncHook( PredicateHookContext context, IServiceProvider services )
+        public override ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
         {
-            var l = _left.CreateHook( context, services );
-            var r = _right.CreateAsyncHook( context, services );
+            var l = _p[0].CreateDescriptor( context, services );
+            var r = _p[1].CreateDescriptor( context, services );
             if( l != null )
             {
                 if( r != null )
                 {
-                    return new HybridPair( context, this, l, r, 0, _revert );
+                    var p = _revert ? ImmutableArray.Create( l, r ) : ImmutableArray.Create( r, l );
+                    return new ObjectPredicateDescriptor( context, this, p );
                 }
                 return l;
             }
             return r;
         }
     }
-
 }

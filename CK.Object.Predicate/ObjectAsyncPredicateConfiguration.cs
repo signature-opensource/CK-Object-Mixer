@@ -2,6 +2,7 @@ using CK.Core;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace CK.Object.Predicate
@@ -39,6 +40,12 @@ namespace CK.Object.Predicate
         public string ConfigurationPath => _configurationPath;
 
         /// <summary>
+        /// Gets whether this predicate is a synchronous one.
+        /// </summary>
+        [MemberNotNullWhen( true, nameof( Synchronous ) )]
+        public bool IsSynchronous => this is ObjectPredicateConfiguration;
+
+        /// <summary>
         /// Gets this predicate as a synchronous one if it is a synchronous predicate.
         /// </summary>
         public ObjectPredicateConfiguration? Synchronous => this as ObjectPredicateConfiguration;
@@ -51,7 +58,7 @@ namespace CK.Object.Predicate
         public abstract Func<object, ValueTask<bool>>? CreateAsyncPredicate( IServiceProvider services );
 
         /// <summary>
-        /// Creates a <see cref="IObjectPredicateHook"/> with this configuration and a predicate obtained by
+        /// Creates a <see cref="ObjectPredicateDescriptor"/> with this configuration and a predicate obtained by
         /// calling <see cref="CreateAsyncPredicate(IServiceProvider)"/>.
         /// <para>
         /// This should be overridden if this predicate relies on other predicates in order to hook all of them.
@@ -60,11 +67,11 @@ namespace CK.Object.Predicate
         /// </summary>
         /// <param name="context">The hook context.</param>
         /// <param name="services">Services that may be required for some (complex) predicates.</param>
-        /// <returns>A wrapper bound to the hook context or null for an empty predicate.</returns>
-        public virtual IObjectPredicateHook? CreateAsyncHook( PredicateHookContext context, IServiceProvider services )
+        /// <returns>A descriptor bound to the context or null for an empty predicate.</returns>
+        public virtual ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
         {
             var p = CreateAsyncPredicate( services );
-            return p != null ? new ObjectAsyncPredicateHook( context, this, p ) : null;
+            return p != null ? new ObjectPredicateDescriptor( context, this, p ) : null;
         }
 
         /// <summary>

@@ -113,23 +113,20 @@ namespace CK.Object.Predicate
 
         public int AtMost => _atMost;
 
-        int IGroupPredicateDescription.PredicateCount => _predicates.Length;
-
         IReadOnlyList<ObjectAsyncPredicateConfiguration> IGroupPredicateConfiguration.Predicates => _predicates;
 
         /// <inheritdoc cref="IGroupPredicateConfiguration.Predicates" />
         public IReadOnlyList<ObjectPredicateConfiguration> Predicates => _predicates;
 
         /// <inheritdoc />
-        public override ObjectPredicateHook? CreateHook( PredicateHookContext context, IServiceProvider services )
+        public override ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
         {
-            ImmutableArray<ObjectPredicateHook> items = _predicates.Select( c => c.CreateHook( context, services ) )
-                                                                   .Where( s => s != null )
-                                                                   .ToImmutableArray()!;
+            ImmutableArray<ObjectPredicateDescriptor> items = _predicates.Select( c => c.CreateDescriptor( context, services ) )
+                                                                         .Where( d => d != null )
+                                                                         .ToImmutableArray()!;
             if( items.Length == 0 ) return null;
             if( items.Length == 1 ) return items[0];
-            if( items.Length == 2 ) return new Pair( context, this, items[0], items[1], Single ? 2 : Any ? 1 : 0 );
-            return new GroupPredicateHook( context, this, items );
+            return new ObjectPredicateDescriptor( context, this, items );
         }
 
         /// <inheritdoc />
