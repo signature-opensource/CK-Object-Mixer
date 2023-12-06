@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Group implementations are internals.">
+    <Position X="7.25" Y="3.25" Height="0.75" Width="1.7" />
+  </Comment>
+  <Class Name="CK.Object.Predicate.ObjectAsyncPredicateConfiguration">
+    <Position X="0.5" Y="0.5" Width="2.5" />
+    <Members>
+      <Field Name="_configurationPath" Hidden="true" />
+      <Field Name="_defaultAsyncResolver" Hidden="true" />
+      <Field Name="_initDefaultLock" Hidden="true" />
+      <Method Name="AddResolver" Hidden="true" />
+      <Method Name="DoCreateGroup" Hidden="true" />
+      <Method Name="ObjectAsyncPredicateConfiguration" Hidden="true" />
+      <Method Name="TryCreateAsyncFromTypeName" Hidden="true" />
+      <Method Name="TryCreateFromTypeName" Hidden="true" />
+      <Method Name="TrySetPlaceholder" Hidden="true" />
+      <Method Name="WarnUnusedAny" Hidden="true" />
+      <Method Name="WarnUnusedAtLeastAtMost" Hidden="true" />
+      <Method Name="WarnUnusedSingle" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Synchronous" Type="CK.Object.Predicate.ObjectPredicateConfiguration" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3" Y="1.667" />
+        <Point X="3.733" Y="1.667" />
+        <Point X="3.733" Y="3.688" />
+        <Point X="3" Y="3.688" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.052" Y="2.218" Height="0.182" Width="1.12" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>BAAEAAAAAAAIAAAAEBAAABAAAEAAADAAAACBYAQwAAg=</HashCode>
+      <FileName>ObjectAsyncPredicateConfiguration.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Synchronous" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CK.Object.Predicate.ObjectPredicateConfiguration">
+    <Position X="0.5" Y="3" Width="2.5" />
+    <Members>
+      <Field Name="_defaultSyncResolver" Hidden="true" />
+      <Field Name="_initDefaultLock" Hidden="true" />
+      <Method Name="AddSynchronousOnlyResolver" Hidden="true" />
+      <Method Name="ObjectPredicateConfiguration" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAABACAAAACAAAAkAAQ=</HashCode>
+      <FileName>Sync\ObjectPredicateConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="CK.Object.Predicate.IObjectPredicateConfiguration">
+    <Position X="4.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>IObjectPredicateConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="CK.Object.Predicate.IGroupPredicateConfiguration">
+    <Position X="4.25" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IGroupPredicateConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="CK.Object.Predicate.IGroupPredicateDescription">
+    <Position X="6.75" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAACAAAAAAACAAAAAAAACAAAAAAAAAAMAAAAAAAAA=</HashCode>
+      <FileName>IGroupPredicateDescription.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

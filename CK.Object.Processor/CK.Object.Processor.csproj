@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>11</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CK.Object.Predicate\CK.Object.Predicate.csproj" />
+    <ProjectReference Include="..\CK.Object.Transform\CK.Object.Transform.csproj" />
+  </ItemGroup>
+</Project>
