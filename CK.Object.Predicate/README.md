@@ -273,7 +273,7 @@ the evaluatuions along with their result and captures exceptions that evaluation
 Sample usage (the evaluation of "Bzy" is logged into the `TestHelper.Monitor`):
 ```csharp
 [Test]
-public void complex_configuration_tree_with_EvaluationHook()
+public void complex_configuration_tree_with_Descriptor()
 {
     MutableConfigurationSection config = GetComplexConfiguration();
     var builder = new TypedConfigurationBuilder();

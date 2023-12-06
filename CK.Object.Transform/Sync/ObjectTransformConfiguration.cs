@@ -45,32 +45,11 @@ namespace CK.Object.Transform
         /// <returns>A configured transform function or null for an identity function.</returns>
         public abstract Func<object, object>? CreateTransform( IServiceProvider services );
 
-        /// <summary>
-        /// Definite relay to <see cref="CreateHook(TransformHookContext, IServiceProvider)"/>.
-        /// </summary>
-        /// <param name="context">The hook context.</param>
-        /// <param name="services">Services that may be required for some (complex) transform functions.</param>
-        /// <returns>A wrapper bound to the hook context or null for the identity transform.</returns>
-        public sealed override IObjectTransformHook? CreateAsyncHook( TransformHookContext context, IServiceProvider services )
-        {
-            return CreateHook( context, services );
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ObjectTransformHook"/> with this configuration and a function obtained by
-        /// calling <see cref="CreateTransform(IServiceProvider)"/>.
-        /// <para>
-        /// This should be overridden if this transform function relies on other transform functions in order to hook all of them.
-        /// Failing to do so will hide some transform functions to the evaluation hook.
-        /// </para>
-        /// </summary>
-        /// <param name="context">The hook context.</param>
-        /// <param name="services">Services that may be required for some (complex) transform functions.</param>
-        /// <returns>A wrapper bound to the hook context or null for an identity function.</returns>
-        public virtual ObjectTransformHook? CreateHook( TransformHookContext context, IServiceProvider services )
+        /// <inheritdoc />
+        public override ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
         {
             var p = CreateTransform( services );
-            return p != null ? new ObjectTransformHook( context, this, p ) : null;
+            return p != null ? new ObjectTransformDescriptor( context, this, p ) : null;
         }
 
         /// <summary>

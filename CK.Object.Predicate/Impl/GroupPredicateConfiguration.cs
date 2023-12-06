@@ -27,7 +27,7 @@ namespace CK.Object.Predicate
             : base( configuration.Path )
         {
             _predicates = predicates.ToImmutableArray();
-            (_atLeast,_atMost) = ReadAtLeastAtMost( monitor, configuration, predicates.Count );
+            (_atLeast,_atMost) = GroupAsyncPredicateConfiguration.ReadAtLeastAtMost( monitor, configuration, predicates.Count );
         }
 
         internal GroupPredicateConfiguration( int knownAtLeast,
@@ -43,66 +43,6 @@ namespace CK.Object.Predicate
             _atMost = knownAtMost;
         }
 
-        /// <summary>
-        /// This only emits warnings, not errors.
-        /// </summary>
-        internal static (int, int) ReadAtLeastAtMost( IActivityMonitor monitor, ImmutableConfigurationSection configuration, int predicatesCount )
-        {
-            int atLeast = 0;
-            int atMost = 0;
-            var cAny = configuration.TryGetBooleanValue( monitor, "Any" );
-            if( cAny.HasValue && cAny.Value )
-            {
-                atLeast = 1;
-                if( configuration["AtLeast"] != null || configuration["AtMost"] != null || configuration["Single"] != null )
-                {
-                    monitor.Warn( $"Configuration '{configuration.Path}:Any' is true. 'AtLeast', 'AtMost' and 'Single' are ignored." );
-                }
-            }
-            else
-            {
-                var cSingle = configuration.TryGetBooleanValue( monitor, "Single" );
-                if( cSingle.HasValue && cSingle.Value )
-                {
-                    atMost = atLeast = 1;
-                    if( configuration["AtLeast"] != null || configuration["AtMost"] != null )
-                    {
-                        monitor.Warn( $"Configuration '{configuration.Path}:Single' is true. 'AtLeast' and 'AtMost' are ignored." );
-                    }
-                }
-                else
-                {
-                    var fM = configuration.TryGetIntValue( monitor, "AtMost", 1 );
-                    if( fM.HasValue )
-                    {
-                        atMost = fM.Value;
-                        if( atMost >= predicatesCount )
-                        {
-                            atMost = 0;
-                            monitor.Warn( $"Configuration '{configuration.Path}:AtMost = {fM.Value}' exceeds number of predicates ({predicatesCount}. This is useless." );
-                        }
-                    }
-                    var fL = configuration.TryGetIntValue( monitor, "AtLeast" );
-                    if( fL.HasValue )
-                    {
-                        atLeast = fL.Value;
-                        if( atLeast >= predicatesCount )
-                        {
-                            atLeast = 0;
-                            monitor.Warn( $"Configuration '{configuration.Path}:AtLeast = {fL.Value}' exceeds number of predicates ({predicatesCount}. This is useless." );
-                        }
-                    }
-                    if( atMost > 0 && atMost < atLeast )
-                    {
-                        atMost = atLeast;
-                        monitor.Warn( $"Configuration '{configuration.Path}:AtMost' is lower than 'AtLeast'. Considering exactly {atLeast} conditions." );
-                    }
-                }
-
-            }
-            return (atLeast, atMost);
-        }
-
         public bool Any => _atLeast == 1 && _atMost == 0;
 
         public bool All => _atLeast == 0 && _atMost == 0;
@@ -113,20 +53,12 @@ namespace CK.Object.Predicate
 
         public int AtMost => _atMost;
 
-        IReadOnlyList<ObjectAsyncPredicateConfiguration> IGroupPredicateConfiguration.Predicates => _predicates;
-
-        /// <inheritdoc cref="IGroupPredicateConfiguration.Predicates" />
-        public IReadOnlyList<ObjectPredicateConfiguration> Predicates => _predicates;
+        public IReadOnlyList<ObjectAsyncPredicateConfiguration> Predicates => _predicates;
 
         /// <inheritdoc />
         public override ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
         {
-            ImmutableArray<ObjectPredicateDescriptor> items = _predicates.Select( c => c.CreateDescriptor( context, services ) )
-                                                                         .Where( d => d != null )
-                                                                         .ToImmutableArray()!;
-            if( items.Length == 0 ) return null;
-            if( items.Length == 1 ) return items[0];
-            return new ObjectPredicateDescriptor( context, this, items );
+            return GroupAsyncPredicateConfiguration.CreateDescriptor( this, context, services, ImmutableArray<ObjectAsyncPredicateConfiguration>.CastUp( _predicates ) );
         }
 
         /// <inheritdoc />

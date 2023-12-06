@@ -22,8 +22,6 @@ namespace CK.Object.Predicate
 
         public int AtMost => 0;
 
-        public int PredicateCount => 2;
-
         public IReadOnlyList<ObjectAsyncPredicateConfiguration> Predicates => _p;
 
         public AndHybridPredicate( string configurationPath, ObjectPredicateConfiguration left, ObjectAsyncPredicateConfiguration right, bool revert )
@@ -58,7 +56,7 @@ namespace CK.Object.Predicate
             {
                 if( r != null )
                 {
-                    var p = _revert ? ImmutableArray.Create( l, r ) : ImmutableArray.Create( r, l );
+                    var p = _revert ? ImmutableArray.Create( r, l ) : ImmutableArray.Create( l, r );
                     return new ObjectPredicateDescriptor( context, this, p );
                 }
                 return l;

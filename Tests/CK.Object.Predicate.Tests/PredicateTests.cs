@@ -234,7 +234,7 @@ namespace CK.Object.Predicate.Tests
         }
 
         [Test]
-        public void complex_configuration_tree_with_EvaluationHook()
+        public void complex_configuration_tree_with_Descriptor()
         {
             MutableConfigurationSection config = GetComplexConfiguration();
             var builder = new TypedConfigurationBuilder();
@@ -243,19 +243,19 @@ namespace CK.Object.Predicate.Tests
             var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
 
-            var hook = new MonitoredPredicateDescriptorContext( TestHelper.Monitor );
+            var context = new MonitoredPredicateDescriptorContext( TestHelper.Monitor );
 
-            var f = fC.CreateHook( TestHelper.Monitor, hook );
+            var f = fC.CreateDescriptor( context );
             Throw.DebugAssert( f != null );
-            f.Evaluate( 0 ).Should().Be( false );
-            f.Evaluate( "Ax" ).Should().Be( false );
-            f.Evaluate( "Axy" ).Should().Be( true );
-            f.Evaluate( "Bzy" ).Should().Be( true );
-            f.Evaluate( "Bzy but too long" ).Should().Be( false );
+            f.EvaluateSync( 0 ).Should().Be( false );
+            f.EvaluateSync( "Ax" ).Should().Be( false );
+            f.EvaluateSync( "Axy" ).Should().Be( true );
+            f.EvaluateSync( "Bzy" ).Should().Be( true );
+            f.EvaluateSync( "Bzy but too long" ).Should().Be( false );
         }
 
         [Test]
-        public async Task complex_configuration_tree_with_EvaluationHook_Async()
+        public async Task complex_configuration_tree_with_Descriptor_Async()
         {
             MutableConfigurationSection config = GetComplexConfiguration();
             var builder = new TypedConfigurationBuilder();
@@ -264,9 +264,9 @@ namespace CK.Object.Predicate.Tests
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
 
-            var hook = new MonitoredPredicateDescriptorContext( TestHelper.Monitor );
+            var context = new MonitoredPredicateDescriptorContext( TestHelper.Monitor );
 
-            var f = fC.CreateAsyncHook( TestHelper.Monitor, hook );
+            var f = fC.CreateDescriptor( context );
             Throw.DebugAssert( f != null );
             (await f.EvaluateAsync( 0 )).Should().Be( false );
             (await f.EvaluateAsync( "Ax" )).Should().Be( false );

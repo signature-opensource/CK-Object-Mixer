@@ -15,6 +15,6 @@ namespace CK.Object.Transform
         /// items in this list doens't guaranty anything about the eventual transformation. 
         /// </para>
         /// </summary>
-        IReadOnlyList<IObjectTransformConfiguration> Transforms { get; }
+        IReadOnlyList<ObjectAsyncTransformConfiguration> Transforms { get; }
     }
 }

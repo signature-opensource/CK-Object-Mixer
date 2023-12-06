@@ -1,20 +1,27 @@
 using CK.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace CK.Object.Transform
 {
     sealed class TwoSync : ObjectTransformConfiguration, ISequenceTransformConfiguration
     {
-        readonly ObjectTransformConfiguration[] _t;
+        readonly ImmutableArray<ObjectTransformConfiguration> _t;
 
-        public TwoSync( string configurationPath, ObjectTransformConfiguration first, ObjectTransformConfiguration second )
+        public TwoSync( string configurationPath, ImmutableArray<ObjectTransformConfiguration> two )
             : base( configurationPath ) 
         {
-            _t = new[] { first, second };
+            Throw.DebugAssert( two.Length == 2 );
+            _t = two;
         }
 
-        public IReadOnlyList<IObjectTransformConfiguration> Transforms => _t;
+        public TwoSync( string configurationPath, ObjectTransformConfiguration first, ObjectTransformConfiguration second )
+            : this( configurationPath, ImmutableArray.Create( first, second ) ) 
+        {
+        }
+
+        public IReadOnlyList<ObjectAsyncTransformConfiguration> Transforms => _t;
 
         public override Func<object, object>? CreateTransform( IServiceProvider services )
         {
@@ -31,19 +38,9 @@ namespace CK.Object.Transform
             return s;
         }
 
-        public override ObjectTransformHook? CreateHook( TransformHookContext context, IServiceProvider services )
+        public override ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
         {
-            var f = _t[0].CreateHook( context, services );
-            var s = _t[1].CreateHook( context, services );
-            if( f != null )
-            {
-                if( s != null )
-                {
-                    return new TwoHookSync( context, this, f, s );
-                }
-                return f;
-            }
-            return s;
+            return TwoAsync.CreateDescriptor( this, context, services, ImmutableArray<ObjectAsyncTransformConfiguration>.CastUp( _t ) );
         }
     }
 

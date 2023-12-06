@@ -16,49 +16,49 @@ namespace CK.Object.Processor
     /// </summary>
     public class ProcessorDescriptorContext
     {
-        readonly PredicateHookContext _conditionHookContext;
-        readonly TransformHookContext _transformHookContext;
+        readonly PredicateDescriptorContext _conditionContext;
+        readonly TransformDescriptorContext _transformContext;
 
         /// <summary>
-        /// Initializes a new hook context.
+        /// Initializes a new descriptor context.
         /// </summary>
-        /// <param name="conditionHookContext"></param>
-        /// <param name="transformHookContext"></param>
-        public ProcessorDescriptorContext( PredicateHookContext conditionHookContext, TransformHookContext transformHookContext )
+        /// <param name="conditionContext">Required condition context.</param>
+        /// <param name="transformContext">Required transform context.</param>
+        public ProcessorDescriptorContext( PredicateDescriptorContext conditionContext, TransformDescriptorContext transformContext )
         {
-            Throw.CheckNotNullArgument( conditionHookContext );
-            Throw.CheckNotNullArgument( transformHookContext );
-            _conditionHookContext = conditionHookContext;
-            _transformHookContext = transformHookContext;
+            Throw.CheckNotNullArgument( conditionContext );
+            Throw.CheckNotNullArgument( transformContext );
+            _conditionContext = conditionContext;
+            _transformContext = transformContext;
         }
 
         /// <summary>
-        /// Gets the hook context that will be used when evaluating <see cref="ObjectProcessorConfiguration.ConfiguredCondition"/>.
+        /// Gets the context that will be used when evaluating <see cref="ObjectProcessorConfiguration.ConfiguredCondition"/>.
         /// </summary>
-        public PredicateHookContext ConditionHookContext => _conditionHookContext;
+        public PredicateDescriptorContext ConditionContext => _conditionContext;
 
         /// <summary>
-        /// Gets the hook context that will be used when evaluating <see cref="ObjectProcessorConfiguration.ConfiguredTransform"/>.
+        /// Gets the context that will be used when evaluating <see cref="ObjectProcessorConfiguration.ConfiguredTransform"/>.
         /// </summary>
-        public TransformHookContext TransformHookContext => _transformHookContext;
+        public TransformDescriptorContext TransformContext => _transformContext;
 
         /// <summary>
-        /// Gets the concatenated errors from <see cref="ConditionHookContext"/> and <see cref="TransformHookContext"/>.
+        /// Gets the concatenated errors from <see cref="ConditionContext"/> and <see cref="TransformContext"/>.
         /// </summary>
-        public IEnumerable<ExceptionDispatchInfo> Errors => _conditionHookContext.Errors.Concat( _transformHookContext.Errors );
+        public IEnumerable<ExceptionDispatchInfo> Errors => _conditionContext.Errors.Concat( _transformContext.Errors );
 
         /// <summary>
-        /// Gets whether <see cref="ConditionHookContext"/> or <see cref="TransformHookContext"/> have error.
+        /// Gets whether <see cref="ConditionContext"/> or <see cref="TransformContext"/> have error.
         /// </summary>
-        public bool HasError => _conditionHookContext.HasError || _transformHookContext.HasError;
+        public bool HasError => _conditionContext.HasError || _transformContext.HasError;
 
         /// <summary>
-        /// Clears errors from <see cref="ConditionHookContext"/> and <see cref="TransformHookContext"/>.
+        /// Clears errors from <see cref="ConditionContext"/> and <see cref="TransformContext"/>.
         /// </summary>
         public void ClearErrors()
         {
-            _conditionHookContext.ClearErrors();
-            _transformHookContext.ClearErrors();
+            _conditionContext.ClearErrors();
+            _transformContext.ClearErrors();
         }
 
     }

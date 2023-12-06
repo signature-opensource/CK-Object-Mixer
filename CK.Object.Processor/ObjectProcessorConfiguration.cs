@@ -648,14 +648,14 @@ namespace CK.Object.Processor
         /// Creates a <see cref="ObjectProcessorDescriptor"/> (as synchronous capable as possible).
         /// </summary>
         /// <param name="monitor">The monitor that must be used to signal errors.</param>
-        /// <param name="context">The hook context.</param>
+        /// <param name="context">The descriptor context.</param>
         /// <param name="services">Services that may be required for some (complex) transform functions.</param>
-        /// <returns>A configured processor hook or null for a void processor.</returns>
+        /// <returns>A configured descriptor or null for a void processor.</returns>
         public ObjectProcessorDescriptor? CreateDescriptor( IActivityMonitor monitor, ProcessorDescriptorContext context, IServiceProvider services )
         {
             Initialize();
-            IObjectPredicateHook? c = _fCondition?.CreateAsyncHook( context.ConditionHookContext, services );
-            IObjectTransformHook? t = _fTransform?.CreateAsyncHook( context.TransformHookContext, services );
+            var c = _fCondition?.CreateDescriptor( context.ConditionContext, services );
+            var t = _fTransform?.CreateDescriptor( context.TransformContext, services );
             ImmutableArray<ObjectProcessorDescriptor> processors = _processors.Select( p => p.CreateDescriptor( monitor, context, services ) )
                                                                               .Where( p => p != null )
                                                                               .ToImmutableArray()!;
@@ -667,15 +667,15 @@ namespace CK.Object.Processor
         sealed class AsyncCond : ObjectAsyncPredicateConfiguration
         {
             readonly Func<IServiceProvider, Func<object, ValueTask<bool>>?> _predicateFactory;
-            readonly Func<PredicateHookContext, IServiceProvider, ObjectAsyncPredicateHook?>? _hookFactory;
+            readonly Func<PredicateDescriptorContext, IServiceProvider, ObjectPredicateDescriptor?>? _descriptorFactory;
 
             public AsyncCond( string configurationPath,
                               Func<IServiceProvider, Func<object, ValueTask<bool>>?> predicateFactory,
-                              Func<PredicateHookContext, IServiceProvider, ObjectAsyncPredicateHook?>? hookFactory = null )
+                              Func<PredicateDescriptorContext, IServiceProvider, ObjectPredicateDescriptor?>? descriptorFactory = null )
                 : base( configurationPath )
             {
                 _predicateFactory = predicateFactory;
-                _hookFactory = hookFactory;
+                _descriptorFactory = descriptorFactory;
             }
 
             public override Func<object, ValueTask<bool>>? CreateAsyncPredicate( IServiceProvider services )
@@ -683,11 +683,11 @@ namespace CK.Object.Processor
                 return _predicateFactory( services );
             }
 
-            public override IObjectPredicateHook? CreateAsyncHook( PredicateHookContext context, IServiceProvider services )
+            public override ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
             {
-                return _hookFactory != null
-                        ? _hookFactory( context, services )
-                        : base.CreateAsyncHook( context, services );
+                return _descriptorFactory != null
+                        ? _descriptorFactory( context, services )
+                        : base.CreateDescriptor( context, services );
             }
         }
 
@@ -696,26 +696,26 @@ namespace CK.Object.Processor
         /// This must be called only from the configuration constructor.
         /// </summary>
         /// <param name="predicateFactory">Required factory of asynchronous condition.</param>
-        /// <param name="hookFactory">Optional hook factory.</param>
+        /// <param name="descriptorFactory">Optional descriptor factory.</param>
         protected void SetIntrinsicAsyncCondition( Func<IServiceProvider, Func<object, ValueTask<bool>>?> predicateFactory,
-                                                   Func<PredicateHookContext, IServiceProvider, ObjectAsyncPredicateHook?>? hookFactory = null )
+                                                   Func<PredicateDescriptorContext, IServiceProvider, ObjectPredicateDescriptor?>? descriptorFactory = null )
         {
             Throw.CheckNotNullArgument( predicateFactory );
-            SetIntrinsicCondition( new AsyncCond( ConfigurationPath, predicateFactory, hookFactory ) );
+            SetIntrinsicCondition( new AsyncCond( ConfigurationPath, predicateFactory, descriptorFactory ) );
         }
 
         sealed class AsyncTrans : ObjectAsyncTransformConfiguration
         {
             readonly Func<IServiceProvider, Func<object, ValueTask<object>>?> _transformFactory;
-            readonly Func<TransformHookContext, IServiceProvider, ObjectAsyncTransformHook>? _hookFactory;
+            readonly Func<TransformDescriptorContext, IServiceProvider, ObjectTransformDescriptor>? _descriptorFactory;
 
             public AsyncTrans( string configurationPath,
                                Func<IServiceProvider, Func<object, ValueTask<object>>?> transformFactory,
-                               Func<TransformHookContext, IServiceProvider, ObjectAsyncTransformHook>? hookFactory )
+                               Func<TransformDescriptorContext, IServiceProvider, ObjectTransformDescriptor>? descriptorFactory )
                 : base( configurationPath )
             {
                 _transformFactory = transformFactory;
-                _hookFactory = hookFactory;
+                _descriptorFactory = descriptorFactory;
             }
 
             public override Func<object, ValueTask<object>>? CreateAsyncTransform( IServiceProvider services )
@@ -723,11 +723,11 @@ namespace CK.Object.Processor
                 return _transformFactory( services );
             }
 
-            public override IObjectTransformHook? CreateAsyncHook( TransformHookContext context, IServiceProvider services )
+            public override ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
             {
-                return _hookFactory != null
-                        ? _hookFactory( context, services )
-                        : base.CreateAsyncHook( context, services );
+                return _descriptorFactory != null
+                        ? _descriptorFactory( context, services )
+                        : base.CreateDescriptor( context, services );
             }
         }
 
@@ -736,26 +736,26 @@ namespace CK.Object.Processor
         /// This must be called only from the configuration constructor.
         /// </summary>
         /// <param name="transformFactory">Required factory of asynchronous transformation.</param>
-        /// <param name="hookFactory">Optional hook factory.</param>
+        /// <param name="descriptorFactory">Optional descriptor factory.</param>
         protected void SetIntrinsicAsyncTransform( Func<IServiceProvider, Func<object, ValueTask<object>>?> transformFactory,
-                                                   Func<TransformHookContext, IServiceProvider, ObjectAsyncTransformHook>? hookFactory = null )
+                                                   Func<TransformDescriptorContext, IServiceProvider, ObjectTransformDescriptor>? descriptorFactory = null )
         {
             Throw.CheckNotNullArgument( transformFactory );
-            SetIntrinsicTransform( new AsyncTrans( ConfigurationPath, transformFactory, hookFactory ) );
+            SetIntrinsicTransform( new AsyncTrans( ConfigurationPath, transformFactory, descriptorFactory ) );
         }
 
         sealed class Cond : ObjectPredicateConfiguration
         {
             readonly Func<IServiceProvider, Func<object, bool>?> _predicateFactory;
-            readonly Func<PredicateHookContext, IServiceProvider, ObjectPredicateHook?>? _hookFactory;
+            readonly Func<PredicateDescriptorContext, IServiceProvider, ObjectPredicateDescriptor?>? _descriptorFactory;
 
             public Cond( string configurationPath,
                          Func<IServiceProvider, Func<object, bool>?> predicateFactory,
-                         Func<PredicateHookContext, IServiceProvider, ObjectPredicateHook?>? hookFactory = null )
+                         Func<PredicateDescriptorContext, IServiceProvider, ObjectPredicateDescriptor?>? descriptorFactory = null )
                 : base( configurationPath )
             {
                 _predicateFactory = predicateFactory;
-                _hookFactory = hookFactory;
+                _descriptorFactory = descriptorFactory;
             }
 
             public override Func<object, bool>? CreatePredicate( IServiceProvider services )
@@ -763,11 +763,11 @@ namespace CK.Object.Processor
                 return _predicateFactory( services );
             }
 
-            public override ObjectPredicateHook? CreateHook( PredicateHookContext context, IServiceProvider services )
+            public override ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )
             {
-                return _hookFactory != null
-                        ? _hookFactory( context, services )
-                        : base.CreateHook( context, services );
+                return _descriptorFactory != null
+                        ? _descriptorFactory( context, services )
+                        : base.CreateDescriptor( context, services );
             }
         }
 
@@ -776,26 +776,26 @@ namespace CK.Object.Processor
         /// This must be called only from the configuration constructor.
         /// </summary>
         /// <param name="predicateFactory">Required factory of synchronous condition.</param>
-        /// <param name="hookFactory">Optional hook factory.</param>
+        /// <param name="descriptorFactory">Optional descriptor factory.</param>
         protected void SetIntrinsicCondition( Func<IServiceProvider, Func<object, bool>?> predicateFactory,
-                                              Func<PredicateHookContext, IServiceProvider, ObjectPredicateHook?>? hookFactory = null )
+                                              Func<PredicateDescriptorContext, IServiceProvider, ObjectPredicateDescriptor?>? descriptorFactory = null )
         {
             Throw.CheckNotNullArgument( predicateFactory );
-            SetIntrinsicCondition( new Cond( ConfigurationPath, predicateFactory, hookFactory ) );
+            SetIntrinsicCondition( new Cond( ConfigurationPath, predicateFactory, descriptorFactory ) );
         }
 
         sealed class Trans : ObjectTransformConfiguration
         {
             readonly Func<IServiceProvider, Func<object, object>?> _transformFactory;
-            readonly Func<TransformHookContext, IServiceProvider, ObjectTransformHook>? _hookFactory;
+            readonly Func<TransformDescriptorContext, IServiceProvider, ObjectTransformDescriptor>? _descriptorFactory;
 
             public Trans( string configurationPath,
                           Func<IServiceProvider, Func<object, object>?> transformFactory,
-                          Func<TransformHookContext, IServiceProvider, ObjectTransformHook>? hookFactory = null )
+                          Func<TransformDescriptorContext, IServiceProvider, ObjectTransformDescriptor>? descriptorFactory = null )
                 : base( configurationPath )
             {
                 _transformFactory = transformFactory;
-                _hookFactory = hookFactory;
+                _descriptorFactory = descriptorFactory;
             }
 
             public override Func<object, object>? CreateTransform( IServiceProvider services )
@@ -803,11 +803,11 @@ namespace CK.Object.Processor
                 return _transformFactory( services );
             }
 
-            public override ObjectTransformHook? CreateHook( TransformHookContext context, IServiceProvider services )
+            public override ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
             {
-                return _hookFactory != null
-                        ? _hookFactory( context, services )
-                        : base.CreateHook( context, services );
+                return _descriptorFactory != null
+                        ? _descriptorFactory( context, services )
+                        : base.CreateDescriptor( context, services );
             }
         }
 
@@ -816,12 +816,12 @@ namespace CK.Object.Processor
         /// This must be called only from the configuration constructor.
         /// </summary>
         /// <param name="transformFactory">Required factory of synchronous transformation.</param>
-        /// <param name="hookFactory">Optional hook factory.</param>
+        /// <param name="descriptorFactory">Optional descriptor factory.</param>
         protected void SetIntrinsicTransform( Func<IServiceProvider, Func<object, object>?> transformFactory,
-                                              Func<TransformHookContext, IServiceProvider, ObjectTransformHook>? hookFactory = null )
+                                              Func<TransformDescriptorContext, IServiceProvider, ObjectTransformDescriptor>? descriptorFactory = null )
         {
             Throw.CheckNotNullArgument( transformFactory );
-            SetIntrinsicTransform( new Trans( ConfigurationPath, transformFactory, hookFactory ) );
+            SetIntrinsicTransform( new Trans( ConfigurationPath, transformFactory, descriptorFactory ) );
         }
 
         /// <summary>

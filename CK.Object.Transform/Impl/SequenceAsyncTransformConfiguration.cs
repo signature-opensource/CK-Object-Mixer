@@ -34,12 +34,27 @@ namespace CK.Object.Transform
             return DoCreateGroup( configuration.Path, predicates );
         }
 
-
-        IReadOnlyList<IObjectTransformConfiguration> ISequenceTransformConfiguration.Transforms => _transforms;
-
-        /// <inheritdoc cref="ISequenceTransformConfiguration.Transforms"/>
         public IReadOnlyList<ObjectAsyncTransformConfiguration> Transforms => _transforms;
 
+        public override Func<object,ValueTask<object>>? CreateAsyncTransform( IServiceProvider services )
+        {
+            ImmutableArray<Func<object, ValueTask<object>>> items = _transforms.Select( c => c.CreateAsyncTransform( services ) )
+                                                                               .Where( s => s != null )        
+                                                                               .ToImmutableArray()!;
+            if( items.Length == 0 ) return null;
+            if( items.Length == 1 ) return items[0];
+            return o => Apply( items, o );
+
+            static async ValueTask<object> Apply( ImmutableArray<Func<object, ValueTask<object>>> transformers, object o )
+            {
+                foreach( var t in transformers )
+                {
+                    o = await t( o ).ConfigureAwait( false );
+                }
+                return o;
+            }
+
+        }
         public override ObjectAsyncTransformConfiguration SetPlaceholder( IActivityMonitor monitor,
                                                                           IConfigurationSection configuration )
         {
@@ -86,37 +101,22 @@ namespace CK.Object.Transform
         }
 
 
-        /// <inheritdoc />
-        public override IObjectTransformHook? CreateAsyncHook( TransformHookContext context, IServiceProvider services )
+        public override ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
         {
-            ImmutableArray<IObjectTransformHook> items = _transforms.Select( c => c.CreateAsyncHook( context, services ) )
-                                                                    .Where( s => s != null )
-                                                                    .ToImmutableArray()!;
-            if( items.Length == 0 ) return null;
-            if( items.Length == 1 ) return items[0];
-            if( items.Length == 2 ) return new TwoHookAsync( context, this, items[0], items[1] );
-            return new SequenceAsyncTransformHook( context, this, items );
+            return CreateDescriptor( this, context, services, _transforms );
         }
 
-        /// <inheritdoc />
-        public override Func<object,ValueTask<object>>? CreateAsyncTransform( IServiceProvider services )
+        static internal ObjectTransformDescriptor? CreateDescriptor( ISequenceTransformConfiguration c,
+                                                                     TransformDescriptorContext context,
+                                                                     IServiceProvider services,
+                                                                     ImmutableArray<ObjectAsyncTransformConfiguration> transforms )
         {
-            ImmutableArray<Func<object, ValueTask<object>>> transformers = _transforms.Select( c => c.CreateAsyncTransform( services ) )
-                                                                                      .Where( s => s != null )        
-                                                                                      .ToImmutableArray()!;
-            if( transformers.Length == 0 ) return null;
-            if( transformers.Length == 1 ) return transformers[0];
-            return o => Apply( transformers, o );
-
-            static async ValueTask<object> Apply( ImmutableArray<Func<object, ValueTask<object>>> transformers, object o )
-            {
-                foreach( var t in transformers )
-                {
-                    o = await t( o ).ConfigureAwait( false );
-                }
-                return o;
-            }
-
+            ImmutableArray<ObjectTransformDescriptor> items = transforms.Select( c => c.CreateDescriptor( context, services ) )
+                                                                        .Where( d => d != null )
+                                                                        .ToImmutableArray()!;
+            if( items.Length == 0 ) return null;
+            if( items.Length == 1 ) return items[0];
+            return new ObjectTransformDescriptor( context, c, items );
         }
     }
 

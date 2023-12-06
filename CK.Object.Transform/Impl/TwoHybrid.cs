@@ -1,6 +1,7 @@
 using CK.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -8,17 +9,17 @@ namespace CK.Object.Transform
 {
     sealed class TwoHybrid : ObjectAsyncTransformConfiguration, ISequenceTransformConfiguration
     {
-        readonly ObjectAsyncTransformConfiguration[] _t;
+        readonly ImmutableArray<ObjectAsyncTransformConfiguration> _t;
         readonly bool _revert;
 
         public TwoHybrid( string configurationPath, ObjectTransformConfiguration first, ObjectAsyncTransformConfiguration second, bool revert )
             : base( configurationPath )
         {
-            _t = new[] { first, second };
+            _t = ImmutableArray.Create( first, second );
             _revert = revert;
         }
 
-        public IReadOnlyList<IObjectTransformConfiguration> Transforms => _t;
+        public IReadOnlyList<ObjectAsyncTransformConfiguration> Transforms => _t;
 
         public override Func<object, ValueTask<object>>? CreateAsyncTransform( IServiceProvider services )
         {
@@ -37,19 +38,20 @@ namespace CK.Object.Transform
             return s;
         }
 
-        public override IObjectTransformHook? CreateAsyncHook( TransformHookContext context, IServiceProvider services )
+        public override ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
         {
-            var f = Unsafe.As<ObjectTransformConfiguration>( _t[0] ).CreateHook( context, services );
-            var s = _t[1].CreateAsyncHook( context, services );
-            if( f != null )
+            var l = _t[0].CreateDescriptor( context, services );
+            var r = _t[1].CreateDescriptor( context, services );
+            if( l != null )
             {
-                if( s != null )
+                if( r != null )
                 {
-                    return new TwoHookHybrid( context, this, f, s, _revert );
+                    var p = _revert ? ImmutableArray.Create( r, l ) : ImmutableArray.Create( l, r );
+                    return new ObjectTransformDescriptor( context, this, p );
                 }
-                return f;
+                return l;
             }
-            return s;
+            return r;
         }
 
 

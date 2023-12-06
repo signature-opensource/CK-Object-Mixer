@@ -16,24 +16,24 @@ namespace CK.Object.Processor
     {
         readonly ProcessorDescriptorContext _context;
         readonly ObjectProcessorConfiguration _configuration;
-        readonly IObjectPredicateHook? _condition;
+        readonly ObjectPredicateDescriptor? _condition;
         readonly ImmutableArray<ObjectProcessorDescriptor> _processors;
-        readonly IObjectTransformHook? _transform;
+        readonly ObjectTransformDescriptor? _transform;
         readonly bool _isSync;
 
         /// <summary>
-        /// Initializes a new hook.
+        /// Initializes a new descriptor.
         /// </summary>
-        /// <param name="context">The hook context.</param>
+        /// <param name="context">The descriptor context.</param>
         /// <param name="configuration">The processor configuration.</param>
-        /// <param name="condition">The condition hook.</param>
-        /// <param name="processors">The processor hooks.</param>
-        /// <param name="transform">The transform hook.</param>
+        /// <param name="condition">The condition descriptor.</param>
+        /// <param name="processors">The processor descriptors.</param>
+        /// <param name="transform">The transform descriptor.</param>
         public ObjectProcessorDescriptor( ProcessorDescriptorContext context,
                                           ObjectProcessorConfiguration configuration,
-                                          IObjectPredicateHook? condition,
+                                          ObjectPredicateDescriptor? condition,
                                           ImmutableArray<ObjectProcessorDescriptor> processors,
-                                          IObjectTransformHook? transform )
+                                          ObjectTransformDescriptor? transform )
         {
             Throw.CheckNotNullArgument( context );
             Throw.CheckNotNullArgument( configuration );
@@ -42,8 +42,8 @@ namespace CK.Object.Processor
             _condition = condition;
             _processors = processors;
             _transform = transform;
-            _isSync = condition is null or ObjectPredicateHook
-                      && transform is null or ObjectTransformHook
+            _isSync = (condition is null || condition.IsSynchronous)
+                      && (transform is null || transform.IsSynchronous)
                       && processors.All( p => p._isSync );
         }
 
@@ -53,22 +53,22 @@ namespace CK.Object.Processor
         public ObjectProcessorConfiguration Configuration => _configuration;
 
         /// <summary>
-        /// Gets the hook context to which this hook is bound.
+        /// Gets the descriptor context to which this descriptor is bound.
         /// </summary>
         public ProcessorDescriptorContext Context => _context;
 
         /// <summary>
-        /// Gets the optional condition hook.
+        /// Gets the optional condition descriptor.
         /// </summary>
-        public IObjectPredicateHook? Condition => _condition;
+        public ObjectPredicateDescriptor? Condition => _condition;
 
         /// <summary>
-        /// Gets the optional transform hook.
+        /// Gets the optional transform descriptor.
         /// </summary>
-        public IObjectTransformHook? Transform => _transform;
+        public ObjectTransformDescriptor? Transform => _transform;
 
         /// <summary>
-        /// Gets the subordinated processor hooks.
+        /// Gets the subordinated processor descriptors.
         /// </summary>
         public ImmutableArray<ObjectProcessorDescriptor> Processors => _processors;
 
@@ -117,13 +117,13 @@ namespace CK.Object.Processor
         {
             Throw.CheckState( IsSynchronous );
             Throw.CheckNotNullArgument( o );
-            if( _condition != null && !Unsafe.As<ObjectPredicateHook>( _condition ).Evaluate( o ) )
+            if( _condition != null && !_condition.EvaluateSync( o ) )
             {
                 return null;
             }
             var r = _processors.Length == 0 ? o : ApplyInner( o );
             if( r == null ) return null;
-            return _transform != null ? Unsafe.As<ObjectTransformHook>( _transform ).Transform( r ) : r;
+            return _transform != null ? _transform.TransformSync( r ) : r;
         }
 
         object? ApplyInner( object o )

@@ -185,7 +185,6 @@ namespace CK.Object.Predicate
             }
         }
 
-
         /// <summary>
         /// Synchronously evaluates the predicate. Must be called only if <see cref="IsSynchronous"/> is true
         /// otherwise an <see cref="InvalidOperationException"/> is thrown.

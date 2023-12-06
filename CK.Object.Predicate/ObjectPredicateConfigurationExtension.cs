@@ -22,8 +22,8 @@ namespace CK.Object.Predicate
         /// <see cref="ObjectAsyncPredicateConfiguration.CreateDescriptor(PredicateDescriptorContext, IServiceProvider)"/>
         /// is called with an empty <see cref="IServiceProvider"/>.
         /// </summary>
-        /// <param name="context">The hook context.</param>
-        /// <returns>A configured wrapper bound to the hook context or null for an empty predicate.</returns>
+        /// <param name="context">The descriptor context.</param>
+        /// <returns>A configured descriptor bound to the descriptor context or null for an empty predicate.</returns>
         public static ObjectPredicateDescriptor? CreateDescriptor( this ObjectAsyncPredicateConfiguration @this, PredicateDescriptorContext context )
         {
             return @this.CreateDescriptor( context, EmptyServiceProvider.Instance );

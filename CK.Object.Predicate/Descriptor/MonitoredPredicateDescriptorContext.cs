@@ -40,7 +40,7 @@ namespace CK.Object.Predicate
 
 
         /// <summary>
-        /// Checks whether this <see cref="PredicateHookContext.HasError"/> is true and returns false is this case.
+        /// Checks whether this <see cref="PredicateDescriptorContext.HasError"/> is true and returns false is this case.
         /// Otherwise, a log group of <see cref="Level"/> is opened (the object to evaluate is not logged).
         /// </summary>
         /// <param name="source">The source predicate.</param>
@@ -57,7 +57,7 @@ namespace CK.Object.Predicate
         }
 
         /// <summary>
-        /// In addition to the base <see cref="PredicateHookContext.OnPredicateError(IObjectPredicateHook, object, Exception)"/>, this emits
+        /// In addition to the base <see cref="PredicateDescriptorContext.OnPredicateError(ObjectPredicateDescriptor, object, Exception)"/>, this emits
         /// a <see cref="LogLevel.Error"/> with the exception and the <paramref name="o"/> (its <see cref="object.ToString()"/>).
         /// It also always returns false to prevent the exception to be rethrown.
         /// </summary>

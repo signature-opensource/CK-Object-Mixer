@@ -109,7 +109,7 @@ namespace CK.Object.Transform.Tests
         }
 
         [Test]
-        public void evaluation_hook_finds_error()
+        public void evaluation_descriptor_finds_error()
         {
             var builder = new TypedConfigurationBuilder();
             ObjectTransformConfiguration.AddResolver( builder );
@@ -122,15 +122,15 @@ namespace CK.Object.Transform.Tests
 
             FluentActions.Invoking( () => f( 0 ) ).Should().Throw<ArgumentException>();
 
-            var hook = new MonitoredTransformHookContext( TestHelper.Monitor );
-            var fH = fC.CreateHook( TestHelper.Monitor, hook );
+            var context = new MonitoredTransformDescriptorContext( TestHelper.Monitor );
+            var fH = fC.CreateDescriptor( context );
             Throw.DebugAssert( fH != null );
 
-            fH.Transform( "Works with a string" ).Should().Be( "Before-Works with a string-After-OneMore" );
+            fH.TransformSync( "Works with a string" ).Should().Be( "Before-Works with a string-After-OneMore" );
 
             using( TestHelper.Monitor.CollectTexts( out var logs ) )
             {
-                var r = fH.Transform( 0 );
+                var r = fH.TransformSync( 0 );
                 r.Should().BeAssignableTo<ArgumentException>();
                 ((ArgumentException)r).Message.Should().Be( "String expected, got 'int'." );
 
@@ -140,7 +140,7 @@ namespace CK.Object.Transform.Tests
         }
 
         [Test]
-        public async Task evaluation_hook_finds_error_Async()
+        public async Task evaluation_descriptor_finds_error_Async()
         {
             var builder = new TypedConfigurationBuilder();
             ObjectAsyncTransformConfiguration.AddResolver( builder );
@@ -153,8 +153,8 @@ namespace CK.Object.Transform.Tests
 
             await FluentActions.Awaiting( async () => await f( 0 ) ).Should().ThrowAsync<ArgumentException>();
 
-            var hook = new MonitoredTransformHookContext( TestHelper.Monitor );
-            var fH = fC.CreateAsyncHook( TestHelper.Monitor, hook );
+            var context = new MonitoredTransformDescriptorContext( TestHelper.Monitor );
+            var fH = fC.CreateDescriptor( context );
             Throw.DebugAssert( fH != null );
 
             (await fH.TransformAsync( "Works with a string" ) ).Should().Be( "Before-Works with a string-After-OneMore" );

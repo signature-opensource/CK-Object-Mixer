@@ -7,7 +7,7 @@ using System.Runtime.ExceptionServices;
 namespace CK.Object.Predicate
 {
     /// <summary>
-    /// Descriptor context that can track each evaluation accross a <see cref="ObjectPredicateHook"/> or <see cref="ObjectAsyncPredicateHook"/>.
+    /// Descriptor context that can track each evaluation accross a <see cref="ObjectPredicateDescriptor"/> or <see cref="ObjectPredicateDescriptor"/>.
     /// <para>
     /// This base implementation only handles exception thrown by evaluation by capturing them in <see cref="Errors"/> and
     /// calling <see cref="UserMessageCollector.AppendErrors(Exception, string?, bool?)"/> if a message collector is available.
@@ -40,7 +40,7 @@ namespace CK.Object.Predicate
 
         /// <summary>
         /// Gets whether at least one error occurred.
-        /// When true, <see cref="OnBeforePredicate(IObjectPredicateHook, object)"/> returns false to skip any further evaulations.
+        /// When true, <see cref="OnBeforePredicate(IObjectPredicateDescriptor, object)"/> returns false to skip any further evaulations.
         /// </summary>
         public bool HasError => _errors != null && _errors.Count > 0;
 
@@ -50,7 +50,7 @@ namespace CK.Object.Predicate
         public void ClearErrors() => _errors?.Clear();
 
         /// <summary>
-        /// Called before evaluating each <see cref="ObjectPredicateHook"/> or <see cref="ObjectAsyncPredicateHook"/>.
+        /// Called before evaluating each <see cref="ObjectPredicateDescriptor"/> or <see cref="ObjectPredicateDescriptor"/>.
         /// <para>
         /// When this method returns false, the evaluation is skipped with a false result.
         /// Implementations should return false when <see cref="HasError"/> is true. This is what this default implementation does.
@@ -94,7 +94,7 @@ namespace CK.Object.Predicate
         }
 
         /// <summary>
-        /// Called after predicate evaluation unless <see cref="OnPredicateError(IObjectPredicateHook, object, Exception)"/> has been called.
+        /// Called after predicate evaluation unless <see cref="OnPredicateError(IObjectPredicateDescriptor, object, Exception)"/> has been called.
         /// Implementations should always return the <paramref name="result"/> but when overridden this may be changed (but this is unexpected).
         /// </summary>
         /// <param name="source">The source predicate.</param>

@@ -1,6 +1,7 @@
 using CK.Core;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using System.Threading.Tasks;
 
@@ -33,6 +34,12 @@ namespace CK.Object.Transform
         public string ConfigurationPath => _configurationPath;
 
         /// <summary>
+        /// Gets whether this transformation as a synchronous one.
+        /// </summary>
+        [MemberNotNullWhen( true, nameof( Synchronous ) )]
+        public bool IsSynchronous => this is ObjectTransformConfiguration;
+
+        /// <summary>
         /// Gets this transformation as a synchronous one if it is a synchronous one.
         /// </summary>
         public ObjectTransformConfiguration? Synchronous => this as ObjectTransformConfiguration;
@@ -46,21 +53,20 @@ namespace CK.Object.Transform
         public abstract Func<object, ValueTask<object>>? CreateAsyncTransform( IServiceProvider services );
 
         /// <summary>
-        /// Creates a <see cref="ObjectAsyncTransformHook"/> with this configuration and a function obtained by
+        /// Creates a <see cref="ObjectTransformDescriptor"/> with this configuration and a function obtained by
         /// calling <see cref="CreateAsyncTransform(IServiceProvider)"/>.
         /// <para>
         /// This should be overridden if this transform function relies on other transform functions in order to hook all of them.
-        /// Failing to do so will hide some transform functions to the evaluation hook.
+        /// Failing to do so will hide some transform descriptor.
         /// </para>
         /// </summary>
-        /// <param name="context">The hook context.</param>
+        /// <param name="context">The descriptor context.</param>
         /// <param name="services">Services that may be required for some (complex) transform functions.</param>
-        /// 
-        /// <returns>A wrapper bound to the hook context or null for an identity function.</returns>
-        public virtual IObjectTransformHook? CreateAsyncHook( TransformHookContext context, IServiceProvider services )
+        /// <returns>A descriptor bound to the descriptor context or null for an identity function.</returns>
+        public virtual ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
         {
             var p = CreateAsyncTransform( services );
-            return p != null ? new ObjectAsyncTransformHook( context, this, p ) : null;
+            return p != null ? new ObjectTransformDescriptor( context, this, p ) : null;
         }
 
         /// <summary>

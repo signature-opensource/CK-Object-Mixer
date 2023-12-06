@@ -17,7 +17,7 @@ The differences (other than the function signatures) are:
   `IGroupPredicateConfiguration` with its `All`, `Any`, `Single` and `AtLeast`/`AtMost` configurations.
 - The default composite field name is "Transforms" (instead of "Predicates").
 - Transform has no equivalent of `AlwaysTruePredicateConfiguration` and `AlwaysFalsePredicateConfiguration`.
-- The [TransformHookContext](Hooks/TransformHookContext.cs) methods have different signatures that enable
+- The [TransformDescriptorContext](Descriptor/TransformDescriptorContext.cs) methods have different signatures that enable
   propagation of the evaluation exception up to the transformation root.
 
 Transform functions have no defined behavior regarding the input object type. Mismatches
@@ -31,7 +31,7 @@ a bad pattern: this should never occur.
 
 However, instead of throwing, simply returning the exception is also possible. Beacause there's
 little chance that exceptions be valid input type, a returned exception is an error. Actually the
-`TransformHookContext` handles this and let any returned or thrown exception bubbles up to the
+`TransformDescriptorContext` handles this and let any returned or thrown exception bubbles up to the
 root.
 
 

@@ -20,8 +20,6 @@ namespace CK.Object.Predicate
 
         public int AtMost => 0;
 
-        public int PredicateCount => 2;
-
         public IReadOnlyList<ObjectAsyncPredicateConfiguration> Predicates => _p;
 
         public AndAsyncPredicate( string configurationPath, ObjectAsyncPredicateConfiguration left, ObjectAsyncPredicateConfiguration right )

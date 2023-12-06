@@ -21,43 +21,40 @@ namespace CK.Object.Transform
         public SequenceTransformConfiguration( IActivityMonitor monitor,
                                                TypedConfigurationBuilder builder,
                                                ImmutableConfigurationSection configuration,
-                                               IReadOnlyList<ObjectTransformConfiguration> transformers )
+                                               IReadOnlyList<ObjectTransformConfiguration> transforms )
             : base( configuration.Path )
         {
-            _transforms = transformers.ToImmutableArray();
+            _transforms = transforms.ToImmutableArray();
         }
 
         internal SequenceTransformConfiguration( string configurationPath,
-                                                 ImmutableArray<ObjectTransformConfiguration> transfomers )
+                                                 ImmutableArray<ObjectTransformConfiguration> transforms )
             : base( configurationPath )
         {
-            _transforms = transfomers;
+            _transforms = transforms;
         }
 
-        IReadOnlyList<IObjectTransformConfiguration> ISequenceTransformConfiguration.Transforms => _transforms;
+        public IReadOnlyList<ObjectAsyncTransformConfiguration> Transforms => _transforms;
 
-        /// <inheritdoc cref="ISequenceTransformConfiguration.Transforms" />
-        public IReadOnlyList<ObjectTransformConfiguration> Transforms => _transforms;
-
-        /// <inheritdoc />
-        public override ObjectTransformHook? CreateHook( TransformHookContext context, IServiceProvider services )
+        public override ObjectTransformDescriptor? CreateDescriptor( TransformDescriptorContext context, IServiceProvider services )
         {
-            ImmutableArray<ObjectTransformHook> items = _transforms.Select( c => c.CreateHook( context, services ) )
-                                                                   .Where( s => s != null )
-                                                                   .ToImmutableArray()!;
-            if( items.Length == 0 ) return null;
-            if( items.Length == 1 ) return items[0];
-            return new SequenceTransformHook( context, this, items );
+            return SequenceAsyncTransformConfiguration.CreateDescriptor( this, context, services, ImmutableArray<ObjectAsyncTransformConfiguration>.CastUp( _transforms ) );
         }
 
         /// <inheritdoc />
         public override Func<object, object>? CreateTransform( IServiceProvider services )
         {
             ImmutableArray<Func<object, object>> items = _transforms.Select( c => c.CreateTransform( services ) )
-                                                               .Where( f => f != null )
-                                                               .ToImmutableArray()!;
+                                                                    .Where( t => t != null )
+                                                                    .ToImmutableArray()!;
             if( items.Length == 0 ) return null;
             if( items.Length == 1 ) return items[0];
+            if( items.Length == 2 )
+            {
+                var f = items[0];
+                var s = items[1];
+                return o => s( f( o ) );
+            }
             return o => Apply( items, o );
 
             static object Apply( ImmutableArray<Func<object, object>> transformers, object o )

@@ -58,7 +58,7 @@ namespace CK.Object.Processor.Tests
                     u = (UserRecord)uO!;
                     u.Friends.Should().HaveCount( 1 );
                 }
-                // Hook
+                // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
                     var fH = fC.CreateDescriptor( TestHelper.Monitor, context, services );
@@ -94,7 +94,7 @@ namespace CK.Object.Processor.Tests
                     u = (UserRecord)uO!;
                     u.Friends.Should().HaveCount( 1 );
                 }
-                // Hook
+                // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
                     var fH = fC.CreateDescriptor( TestHelper.Monitor, context, services );
@@ -167,10 +167,10 @@ namespace CK.Object.Processor.Tests
                     f( "Hell!" ).Should().Be( "HELL!" );
                 }
 
-                // Hook
+                // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
-                    var fH = fC.CreateHook( TestHelper.Monitor, context );
+                    var fH = fC.CreateDescriptor( TestHelper.Monitor, context );
                     Throw.DebugAssert( fH != null );
                     fH.SyncProcess( 3712 ).Should().BeNull();
                     fH.SyncProcess( this ).Should().BeNull();
@@ -197,10 +197,10 @@ namespace CK.Object.Processor.Tests
                     (await f( "Hell!" )).Should().Be( "HELL!" );
                 }
 
-                // Hook
+                // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
-                    var fH = fC.CreateHook( TestHelper.Monitor, context );
+                    var fH = fC.CreateDescriptor( TestHelper.Monitor, context );
                     Throw.DebugAssert( fH != null );
                     (await fH.ProcessAsync( 3712 )).Should().BeNull();
                     (await fH.ProcessAsync( this )).Should().BeNull();

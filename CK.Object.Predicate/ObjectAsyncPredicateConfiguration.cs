@@ -62,10 +62,10 @@ namespace CK.Object.Predicate
         /// calling <see cref="CreateAsyncPredicate(IServiceProvider)"/>.
         /// <para>
         /// This should be overridden if this predicate relies on other predicates in order to hook all of them.
-        /// Failing to do so will hide some predicates to the evaluation hook.
+        /// Failing to do so will hide some predicates descriptors.
         /// </para>
         /// </summary>
-        /// <param name="context">The hook context.</param>
+        /// <param name="context">The descriptor context.</param>
         /// <param name="services">Services that may be required for some (complex) predicates.</param>
         /// <returns>A descriptor bound to the context or null for an empty predicate.</returns>
         public virtual ObjectPredicateDescriptor? CreateDescriptor( PredicateDescriptorContext context, IServiceProvider services )

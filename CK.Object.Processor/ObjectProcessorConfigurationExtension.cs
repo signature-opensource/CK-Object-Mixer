@@ -42,10 +42,10 @@ namespace CK.Object.Processor
         /// Creates a <see cref="ObjectProcessorDescriptor"/> that doesn't require any external service to do its job.
         /// </summary>
         /// <param name="monitor">The monitor that must be used to signal errors.</param>
-        /// <param name="context">The hook context.</param>
+        /// <param name="context">The descriptor context.</param>
         /// <param name="services">Services that may be required for some (complex) transform functions.</param>
-        /// <returns>A configured processor hook or null for a void processor.</returns>
-        public static ObjectProcessorDescriptor? CreateHook( this ObjectProcessorConfiguration @this, IActivityMonitor monitor, ProcessorDescriptorContext context )
+        /// <returns>A configured processor descriptor or null for a void processor.</returns>
+        public static ObjectProcessorDescriptor? CreateDescriptor( this ObjectProcessorConfiguration @this, IActivityMonitor monitor, ProcessorDescriptorContext context )
         {
             return @this.CreateDescriptor( monitor, context, EmptyServiceProvider.Instance );
         }
