@@ -10,7 +10,7 @@ namespace CK.Object.Processor
         /// <summary>
         /// Creates an asynchronous transform that doesn't require any external service to do its job.
         /// <para>
-        /// <see cref="ObjectProcessorConfiguration.CreateProcessor(IActivityMonitor, IServiceProvider)"/> is called
+        /// <see cref="ObjectProcessorConfiguration.CreateProcessor(IServiceProvider)"/> is called
         /// with an empty <see cref="IServiceProvider"/>.
         /// </para>
         /// </summary>
@@ -18,13 +18,13 @@ namespace CK.Object.Processor
         /// <returns>A configured processor or null for the void processor.</returns>
         public static Func<object, ValueTask<object?>>? CreateAsyncProcessor( this ObjectProcessorConfiguration @this, IActivityMonitor monitor )
         {
-            return @this.CreateAsyncProcessor( monitor, EmptyServiceProvider.Instance );
+            return @this.CreateAsyncProcessor( EmptyServiceProvider.Instance );
         }
 
         /// <summary>
         /// Creates a synchronous processor function that doesn't require any external service to do its job.
         /// <para>
-        /// <see cref="ObjectProcessorConfiguration.CreateProcessor(IActivityMonitor, IServiceProvider)"/> is called
+        /// <see cref="ObjectProcessorConfiguration.CreateProcessor(IServiceProvider)"/> is called
         /// with an empty <see cref="IServiceProvider"/>.
         /// </para>
         /// <para>
@@ -35,7 +35,7 @@ namespace CK.Object.Processor
         /// <returns>A configured object Processor or null for the void processor.</returns>
         public static Func<object, object?>? CreateProcessor( this ObjectProcessorConfiguration @this, IActivityMonitor monitor )
         {
-            return @this.CreateProcessor( monitor, EmptyServiceProvider.Instance );
+            return @this.CreateProcessor( EmptyServiceProvider.Instance );
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace CK.Object.Processor
         /// <returns>A configured processor descriptor or null for a void processor.</returns>
         public static ObjectProcessorDescriptor? CreateDescriptor( this ObjectProcessorConfiguration @this, IActivityMonitor monitor, ProcessorDescriptorContext context )
         {
-            return @this.CreateDescriptor( monitor, context, EmptyServiceProvider.Instance );
+            return @this.CreateDescriptor( context, EmptyServiceProvider.Instance );
         }
 
 

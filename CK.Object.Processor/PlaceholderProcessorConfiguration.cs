@@ -46,14 +46,11 @@ namespace CK.Object.Processor
         /// <summary>
         /// Returns this or a new processor configuration if <paramref name="configuration"/> is a child
         /// of this configuration.
-        /// <para>
-        /// Errors are emitted in the monitor. On error, this instance is returned. 
-        /// </para>
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
         /// <param name="configuration">The configuration that will potentially replaces this placeholder.</param>
-        /// <returns>A new processor configuration or this if the section is not a child or if an error occurred.</returns>
-        public override ObjectProcessorConfiguration SetPlaceholder( IActivityMonitor monitor, IConfigurationSection configuration )
+        /// <returns>A new configuration (or this object if nothing changed). Null only if an error occurred.</returns>
+        public override ObjectProcessorConfiguration? SetPlaceholder( IActivityMonitor monitor, IConfigurationSection configuration )
         {
             if( configuration.GetParentPath().Equals( ConfigurationPath, StringComparison.OrdinalIgnoreCase ) )
             {
@@ -62,8 +59,7 @@ namespace CK.Object.Processor
                 {
                     config = new ImmutableConfigurationSection( configuration, lookupParent: _configuration );
                 }
-                var newC = builder.Create<ObjectProcessorConfiguration>( monitor, config );
-                if( newC != null ) return newC;
+                return builder.Create<ObjectProcessorConfiguration>( monitor, config );
             }
             return this;
         }

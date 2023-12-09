@@ -67,16 +67,7 @@ namespace CK.Object.Transform
             }
         }
 
-        /// <summary>
-        /// Composite mutator.
-        /// <para>
-        /// Errors are emitted in the monitor. On error, this instance is returned. 
-        /// </para>
-        /// </summary>
-        /// <param name="monitor">The monitor to use to signal errors.</param>
-        /// <param name="configuration">Configuration of the replaced placeholder.</param>
-        /// <returns>A new configuration or this instance if an error occurred or the placeholder has not been found.</returns>
-        public override ObjectAsyncTransformConfiguration SetPlaceholder( IActivityMonitor monitor,
+        public override ObjectAsyncTransformConfiguration? SetPlaceholder( IActivityMonitor monitor,
                                                                           IConfigurationSection configuration )
         {
             return SequenceAsyncTransformConfiguration.DoSetPlaceholder( monitor, configuration, this, _transforms, ConfigurationPath );

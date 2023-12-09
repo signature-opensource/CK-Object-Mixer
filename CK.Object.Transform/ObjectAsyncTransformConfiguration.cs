@@ -10,7 +10,7 @@ namespace CK.Object.Transform
     /// <summary>
     /// Configuration base class for asynchronous transform functions.
     /// </summary>
-    public abstract partial class ObjectAsyncTransformConfiguration : IObjectTransformConfiguration
+    public abstract partial class ObjectAsyncTransformConfiguration : IObjectTransformConfiguration, ISupportConfigurationPlaceholder<ObjectAsyncTransformConfiguration>
     {
         readonly string _configurationPath;
 
@@ -70,58 +70,12 @@ namespace CK.Object.Transform
         }
 
         /// <summary>
-        /// Tries to replace a <see cref="PlaceholderTransformConfiguration"/>.
-        /// <para>
-        /// The <paramref name="configuration"/>.Path must be a direct child of the placeholder to replace.
-        /// </para>
-        /// </summary>
-        /// <param name="monitor">The monitor to use.</param>
-        /// <param name="configuration">The configuration that should replace a placeholder.</param>
-        /// <returns>A new configuration or null if an error occurred or the placeholder was not found.</returns>
-        public ObjectAsyncTransformConfiguration? TrySetPlaceholder( IActivityMonitor monitor,
-                                                                     IConfigurationSection configuration )
-        {
-            return TrySetPlaceholder( monitor, configuration, out var _ );
-        }
-
-        /// <summary>
-        /// Tries to replace a <see cref="PlaceholderTransformConfiguration"/>.
-        /// The <paramref name="configuration"/>.Path must be a direct child of the placeholder to replace.
-        /// </summary>
-        /// <param name="monitor">The monitor to use.</param>
-        /// <param name="configuration">The configuration that should replace a placeholder.</param>
-        /// <param name="builderError">True if an error occurred while building the configuration, false if the placeholder was not found.</param>
-        /// <returns>A new configuration or null if a <paramref name="builderError"/> occurred or the placeholder was not found.</returns>
-        public ObjectAsyncTransformConfiguration? TrySetPlaceholder( IActivityMonitor monitor,
-                                                                     IConfigurationSection configuration,
-                                                                     out bool builderError )
-        {
-            builderError = false;
-            ObjectAsyncTransformConfiguration? result = null;
-            var buildError = false;
-            using( monitor.OnError( () => buildError = true ) )
-            {
-                result = SetPlaceholder( monitor, configuration );
-            }
-            if( !buildError && result == this )
-            {
-                monitor.Error( $"Unable to set placeholder: '{configuration.GetParentPath()}' " +
-                               $"doesn't exist or is not a placeholder." );
-                return null;
-            }
-            return (builderError = buildError) ? null : result;
-        }
-
-        /// <summary>
         /// Mutator default implementation: always returns this instance by default.
-        /// <para>
-        /// Errors are emitted in the monitor. On error, this instance is returned. 
-        /// </para>
         /// </summary>
         /// <param name="monitor">The monitor to use to signal errors.</param>
         /// <param name="configuration">Configuration of the replaced placeholder.</param>
-        /// <returns>A new configuration or this instance if an error occurred or the placeholder has not been found.</returns>
-        public virtual ObjectAsyncTransformConfiguration SetPlaceholder( IActivityMonitor monitor, IConfigurationSection configuration )
+        /// <returns>Always this object.</returns>
+        public virtual ObjectAsyncTransformConfiguration? SetPlaceholder( IActivityMonitor monitor, IConfigurationSection configuration )
         {
             return this;
         }

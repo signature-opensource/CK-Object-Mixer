@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>11</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.Configuration" Version="0.2.1--0048-develop" />
+    <PackageReference Include="CK.Configuration" Version="0.2.1--0052-develop" />
     <PackageReference Include="CK.Globalization" Version="0.4.1--0002-develop" />
   </ItemGroup>
 </Project>

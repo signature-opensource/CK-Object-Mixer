@@ -111,7 +111,7 @@ namespace CK.Object.Predicate
             }
         }
 
-        public override ObjectAsyncPredicateConfiguration SetPlaceholder( IActivityMonitor monitor,
+        public override ObjectAsyncPredicateConfiguration? SetPlaceholder( IActivityMonitor monitor,
                                                                           IConfigurationSection configuration )
         {
             return GroupAsyncPredicateConfiguration.DoSetPlaceholder( monitor, configuration, this, _predicates, _atLeast, _atMost, ConfigurationPath );

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -14,8 +13,8 @@ namespace CK.Object.Processor
     /// <summary>
     /// Configuration class for Processor.
     /// <para>
-    /// This always supports asynchronous processors <see cref="CreateAsyncProcessor(IActivityMonitor, IServiceProvider)"/> but
-    /// supports synchronous processors (<see cref="CreateProcessor(IActivityMonitor, IServiceProvider)"/> only if no async predicates
+    /// This always supports asynchronous processors <see cref="CreateAsyncProcessor(IServiceProvider)"/> but
+    /// supports synchronous processors (<see cref="CreateProcessor(IServiceProvider)"/> only if no async predicates
     /// or transformation exist: see <see cref="IsSynchronous"/>.
     /// </para>
     /// <para>
@@ -109,27 +108,6 @@ namespace CK.Object.Processor
         }
 
         /// <summary>
-        /// Clones this object by using <see cref="object.MemberwiseClone()"/>.
-        /// This should work almost all the time but if more control is required, this method
-        /// can be overridden and a mutation constructor must be specifically designed.
-        /// </summary>
-        /// <param name="configuredCondition">The configured condition to consider.</param>
-        /// <param name="configuredTransform">The configured transform to consider.</param>
-        /// <param name="processors">The processors to consider.</param>
-        /// <returns>A mutated clone of this processor configuration.</returns>
-        internal protected virtual ObjectProcessorConfiguration Clone( ObjectAsyncPredicateConfiguration? configuredCondition,
-                                                                       ObjectAsyncTransformConfiguration? configuredTransform,
-                                                                       ImmutableArray<ObjectProcessorConfiguration> processors )
-        {
-            var c = (ObjectProcessorConfiguration)MemberwiseClone();
-            c._initialized = false;
-            c._cCondition = configuredCondition;
-            c._cTransform = configuredTransform;
-            c._processors = processors;
-            return c;
-        }
-
-        /// <summary>
         /// Gets the configuration path.
         /// </summary>
         public string ConfigurationPath => _configurationPath;
@@ -208,39 +186,37 @@ namespace CK.Object.Processor
         /// Creates a synchronous processor function. Must be called only if <see cref="IsSynchronous"/>
         /// is true otherwise an <see cref="InvalidOperationException"/> is thrown.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
         /// <param name="services">Services that may be required for some (complex) transform functions.</param>
         /// <returns>A configured processor function or null for a void processor.</returns>
-        public virtual Func<object, object?>? CreateProcessor( IActivityMonitor monitor, IServiceProvider services )
+        public virtual Func<object, object?>? CreateProcessor( IServiceProvider services )
         {
             Throw.CheckState( IsSynchronous );
-            return CreateProcessor( monitor, services, _fCondition?.Synchronous, _fTransform?.Synchronous, _processors );
+            return CreateProcessor( services, _fCondition?.Synchronous, _fTransform?.Synchronous, _processors );
         }
 
-        object? CreateHybrid( IActivityMonitor monitor, IServiceProvider services )
+        object? CreateHybrid( IServiceProvider services )
         {
             var k = Initialize();
             if( k < PKind.AsyncFull && _isSyncProcessors )
             {
-                return CreateProcessor( monitor, services, _fCondition?.Synchronous, _fTransform?.Synchronous, _processors );
+                return CreateProcessor( services, _fCondition?.Synchronous, _fTransform?.Synchronous, _processors );
             }
             return k switch
             {
-                PKind.SyncCAsyncT => CreateHybridAsyncProcessor( monitor, services, _fCondition!.Synchronous!, _fTransform!, _processors ),
-                PKind.AsyncCSyncT => CreateHybridAsyncProcessor( monitor, services, _fCondition!, _fTransform!.Synchronous!, _processors ),
-                _ => CreateAsyncProcessor( monitor, services, _fCondition, _fTransform, _processors )
+                PKind.SyncCAsyncT => CreateHybridAsyncProcessor( services, _fCondition!.Synchronous!, _fTransform!, _processors ),
+                PKind.AsyncCSyncT => CreateHybridAsyncProcessor( services, _fCondition!, _fTransform!.Synchronous!, _processors ),
+                _ => CreateAsyncProcessor( services, _fCondition, _fTransform, _processors )
             };
         }
 
         /// <summary>
         /// Creates an asynchronous processor function.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
         /// <param name="services">Services that may be required for some (complex) processors.</param>
         /// <returns>A configured processor function or null for a void processor.</returns>
-        public virtual Func<object, ValueTask<object?>>? CreateAsyncProcessor( IActivityMonitor monitor, IServiceProvider services )
+        public virtual Func<object, ValueTask<object?>>? CreateAsyncProcessor( IServiceProvider services )
         {
-            var o = CreateHybrid( monitor, services );
+            var o = CreateHybrid( services );
             if( o is Func<object,object?> sync )
             {
                 return o => ValueTask.FromResult( sync( o ) );
@@ -248,15 +224,14 @@ namespace CK.Object.Processor
             return Unsafe.As<Func<object, ValueTask<object?>>?>( o );
         }
 
-        static Func<object, ValueTask<object?>>? CreateAsyncProcessor( IActivityMonitor monitor,
-                                                                       IServiceProvider services,
+        static Func<object, ValueTask<object?>>? CreateAsyncProcessor( IServiceProvider services,
                                                                        ObjectAsyncPredicateConfiguration? condition,
                                                                        ObjectAsyncTransformConfiguration? transform,
                                                                        ImmutableArray<ObjectProcessorConfiguration> processors )
         {
             Func<object, ValueTask<bool>>? c = condition?.CreateAsyncPredicate( services );
             Func<object, ValueTask<object>>? t = transform?.CreateAsyncTransform( services );
-            object? inner = CreateHybridInnerProcessor( monitor, services, processors );
+            object? inner = CreateHybridInnerProcessor( services, processors );
             if( c != null )
             {
                 if( t != null )
@@ -324,15 +299,14 @@ namespace CK.Object.Processor
             return Unsafe.As<Func<object, ValueTask<object?>>?>( inner );
         }
 
-        static Func<object, ValueTask<object?>>? CreateHybridAsyncProcessor( IActivityMonitor monitor,
-                                                                             IServiceProvider services,
+        static Func<object, ValueTask<object?>>? CreateHybridAsyncProcessor( IServiceProvider services,
                                                                              ObjectAsyncPredicateConfiguration condition,
                                                                              ObjectTransformConfiguration transform,
                                                                              ImmutableArray<ObjectProcessorConfiguration> processors )
         {
             Func<object, ValueTask<bool>>? c = condition.CreateAsyncPredicate( services );
             Func<object, object>? t = transform.CreateTransform( services );
-            object? inner = CreateHybridInnerProcessor( monitor, services, processors );
+            object? inner = CreateHybridInnerProcessor( services, processors );
             if( c != null )
             {
                 if( t != null )
@@ -394,15 +368,14 @@ namespace CK.Object.Processor
             return Unsafe.As<Func<object, ValueTask<object?>>?>( inner );
         }
 
-        static Func<object, ValueTask<object?>>? CreateHybridAsyncProcessor( IActivityMonitor monitor,
-                                                                             IServiceProvider services,
+        static Func<object, ValueTask<object?>>? CreateHybridAsyncProcessor( IServiceProvider services,
                                                                              ObjectPredicateConfiguration condition,
                                                                              ObjectAsyncTransformConfiguration transform,
                                                                              ImmutableArray<ObjectProcessorConfiguration> processors )
         {
             Func<object, bool>? c = condition.CreatePredicate( services );
             Func<object, ValueTask<object>>? t = transform.CreateAsyncTransform( services );
-            object? inner = CreateHybridInnerProcessor( monitor, services, processors );
+            object? inner = CreateHybridInnerProcessor( services, processors );
             if( c != null )
             {
                 if( t != null )
@@ -466,15 +439,14 @@ namespace CK.Object.Processor
             return Unsafe.As<Func<object, ValueTask<object?>>?>( inner );
         }
 
-        static Func<object, object?>? CreateProcessor( IActivityMonitor monitor,
-                                                       IServiceProvider services,
+        static Func<object, object?>? CreateProcessor( IServiceProvider services,
                                                        ObjectPredicateConfiguration? condition,
                                                        ObjectTransformConfiguration? transform,
                                                        ImmutableArray<ObjectProcessorConfiguration> processors )
         {
             Func<object, bool>? c = condition?.CreatePredicate( services );
             Func<object, object>? t = transform?.CreateTransform( services );
-            Func<object, object?>? inner = CreateInnerProcessor( monitor, services, processors );
+            Func<object, object?>? inner = CreateInnerProcessor( services, processors );
             if( c != null )
             {
                 if( t != null )
@@ -516,11 +488,10 @@ namespace CK.Object.Processor
         }
 
 
-        static Func<object, object?>? CreateInnerProcessor( IActivityMonitor monitor,
-                                                            IServiceProvider services,
+        static Func<object, object?>? CreateInnerProcessor( IServiceProvider services,
                                                             ImmutableArray<ObjectProcessorConfiguration> processors )
         {
-            ImmutableArray<Func<object, object?>> p = processors.Select( c => c.CreateProcessor( monitor, services ) )
+            ImmutableArray<Func<object, object?>> p = processors.Select( c => c.CreateProcessor( services ) )
                                                                                .Where( f => f != null )
                                                                                .ToImmutableArray()!;
             if( p.Length == 0 ) return null;
@@ -528,8 +499,7 @@ namespace CK.Object.Processor
             return o => Apply( p, o );
         }
 
-        static object? CreateHybridInnerProcessor( IActivityMonitor monitor,
-                                                   IServiceProvider services,
+        static object? CreateHybridInnerProcessor( IServiceProvider services,
                                                    ImmutableArray<ObjectProcessorConfiguration> processors )
         {
             var b = ImmutableArray.CreateBuilder<object>( processors.Length );
@@ -538,7 +508,7 @@ namespace CK.Object.Processor
             bool isFull = true;
             foreach( var p in processors )
             {
-                var o = p.CreateHybrid( monitor, services );
+                var o = p.CreateHybrid( services );
                 if( o != null )
                 {
                     if( o is Func<object, object?> ) isAsync = false;
@@ -647,16 +617,15 @@ namespace CK.Object.Processor
         /// <summary>
         /// Creates a <see cref="ObjectProcessorDescriptor"/> (as synchronous capable as possible).
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
         /// <param name="context">The descriptor context.</param>
         /// <param name="services">Services that may be required for some (complex) transform functions.</param>
         /// <returns>A configured descriptor or null for a void processor.</returns>
-        public ObjectProcessorDescriptor? CreateDescriptor( IActivityMonitor monitor, ProcessorDescriptorContext context, IServiceProvider services )
+        public ObjectProcessorDescriptor? CreateDescriptor( ProcessorDescriptorContext context, IServiceProvider services )
         {
             Initialize();
             var c = _fCondition?.CreateDescriptor( context.ConditionContext, services );
             var t = _fTransform?.CreateDescriptor( context.TransformContext, services );
-            ImmutableArray<ObjectProcessorDescriptor> processors = _processors.Select( p => p.CreateDescriptor( monitor, context, services ) )
+            ImmutableArray<ObjectProcessorDescriptor> processors = _processors.Select( p => p.CreateDescriptor( context, services ) )
                                                                               .Where( p => p != null )
                                                                               .ToImmutableArray()!;
             return c != null || t != null || processors.Length > 0

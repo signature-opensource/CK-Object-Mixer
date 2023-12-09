@@ -116,20 +116,20 @@ namespace CK.Object.Predicate
 
         public IReadOnlyList<ObjectAsyncPredicateConfiguration> Predicates => _predicates;
 
-        public override ObjectAsyncPredicateConfiguration SetPlaceholder( IActivityMonitor monitor,
-                                                                          IConfigurationSection configuration )
+        public override ObjectAsyncPredicateConfiguration? SetPlaceholder( IActivityMonitor monitor,
+                                                                           IConfigurationSection configuration )
         {
 
             return DoSetPlaceholder( monitor, configuration, this, _predicates, _atLeast, _atMost, ConfigurationPath );
         }
 
-        internal static ObjectAsyncPredicateConfiguration DoSetPlaceholder( IActivityMonitor monitor,
-                                                                            IConfigurationSection configuration,
-                                                                            ObjectAsyncPredicateConfiguration @this,
-                                                                            IReadOnlyList<ObjectAsyncPredicateConfiguration> predicates,
-                                                                            int atLeast,
-                                                                            int atMost,
-                                                                            string configurationPath )
+        internal static ObjectAsyncPredicateConfiguration? DoSetPlaceholder( IActivityMonitor monitor,
+                                                                             IConfigurationSection configuration,
+                                                                             ObjectAsyncPredicateConfiguration @this,
+                                                                             IReadOnlyList<ObjectAsyncPredicateConfiguration> predicates,
+                                                                             int atLeast,
+                                                                             int atMost,
+                                                                             string configurationPath )
         {
             Throw.CheckNotNullArgument( monitor );
             Throw.CheckNotNullArgument( configuration );
@@ -145,6 +145,7 @@ namespace CK.Object.Predicate
             {
                 var item = predicates[i];
                 var r = item.SetPlaceholder( monitor, configuration );
+                if( r == null ) return null;
                 if( r != item )
                 {
                     if( newItems == null )

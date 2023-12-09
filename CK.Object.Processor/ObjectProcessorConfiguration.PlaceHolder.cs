@@ -8,61 +8,36 @@ using System.Linq;
 
 namespace CK.Object.Processor
 {
-    public partial class ObjectProcessorConfiguration
+    public partial class ObjectProcessorConfiguration : ISupportConfigurationPlaceholder<ObjectProcessorConfiguration>
     {
         /// <summary>
-        /// Tries to replace a <see cref="PlaceholderProcessorConfiguration"/>.
-        /// <para>
-        /// The <paramref name="configuration"/>.Path must be a direct child of the placeholder to replace.
-        /// </para>
+        /// Clones this object by using <see cref="object.MemberwiseClone()"/>.
+        /// This should work almost all the time but if more control is required, this method
+        /// can be overridden and a mutation constructor must be specifically designed.
         /// </summary>
-        /// <param name="monitor">The monitor to use.</param>
-        /// <param name="configuration">The configuration that should replace a placeholder.</param>
-        /// <returns>A new configuration or null if an error occurred or the placeholder was not found.</returns>
-        public ObjectProcessorConfiguration? TrySetPlaceholder( IActivityMonitor monitor,
-                                                                IConfigurationSection configuration )
+        /// <param name="configuredCondition">The configured condition to consider.</param>
+        /// <param name="configuredTransform">The configured transform to consider.</param>
+        /// <param name="processors">The processors to consider.</param>
+        /// <returns>A mutated clone of this processor configuration.</returns>
+        internal protected virtual ObjectProcessorConfiguration Clone( ObjectAsyncPredicateConfiguration? configuredCondition,
+                                                                       ObjectAsyncTransformConfiguration? configuredTransform,
+                                                                       ImmutableArray<ObjectProcessorConfiguration> processors )
         {
-            return TrySetPlaceholder( monitor, configuration, out var _ );
-        }
-
-        /// <summary>
-        /// Tries to replace a <see cref="PlaceholderProcessorConfiguration"/>.
-        /// The <paramref name="configuration"/>.Path must be a direct child of the placeholder to replace.
-        /// </summary>
-        /// <param name="monitor">The monitor to use.</param>
-        /// <param name="configuration">The configuration that should replace a placeholder.</param>
-        /// <param name="builderError">True if an error occurred while building the configuration, false if the placeholder was not found.</param>
-        /// <returns>A new configuration or null if a <paramref name="builderError"/> occurred or the placeholder was not found.</returns>
-        public ObjectProcessorConfiguration? TrySetPlaceholder( IActivityMonitor monitor,
-                                                                     IConfigurationSection configuration,
-                                                                     out bool builderError )
-        {
-            builderError = false;
-            ObjectProcessorConfiguration? result = null;
-            var buildError = false;
-            using( monitor.OnError( () => buildError = true ) )
-            {
-                result = SetPlaceholder( monitor, configuration );
-            }
-            if( !buildError && result == this )
-            {
-                monitor.Error( $"Unable to set placeholder: '{configuration.GetParentPath()}' " +
-                               $"doesn't exist or is not a placeholder." );
-                return null;
-            }
-            return (builderError = buildError) ? null : result;
+            var c = (ObjectProcessorConfiguration)MemberwiseClone();
+            c._initialized = false;
+            c._cCondition = configuredCondition;
+            c._cTransform = configuredTransform;
+            c._processors = processors;
+            return c;
         }
 
         /// <summary>
         /// Mutator default implementation handles "Condition", "Transform" and "Processors" mutations.
-        /// <para>
-        /// Errors are emitted in the monitor. On error, this instance is returned. 
-        /// </para>
         /// </summary>
         /// <param name="monitor">The monitor to use to signal errors.</param>
         /// <param name="configuration">Configuration of the replaced placeholder.</param>
-        /// <returns>A new configuration or this instance if an error occurred or the placeholder has not been found.</returns>
-        public virtual ObjectProcessorConfiguration SetPlaceholder( IActivityMonitor monitor, IConfigurationSection configuration )
+        /// <returns>A new configuration (or this object if nothing changed). Null only if an error occurred.</returns>
+        public virtual ObjectProcessorConfiguration? SetPlaceholder( IActivityMonitor monitor, IConfigurationSection configuration )
         {
             Throw.CheckNotNullArgument( monitor );
             Throw.CheckNotNullArgument( configuration );
@@ -76,12 +51,14 @@ namespace CK.Object.Processor
             if( condition != null )
             {
                 condition = condition.SetPlaceholder( monitor, configuration );
+                if( condition == null ) return null;
             }
             // Handles placeholder in Transform.
             var transform = ConfiguredTransform;
             if( transform != null )
             {
                 transform = transform.SetPlaceholder( monitor, configuration );
+                if( transform == null ) return null;
             }
             // Handles placeholder inside Processors.
             ImmutableArray<ObjectProcessorConfiguration>.Builder? newItems = null;
@@ -89,6 +66,7 @@ namespace CK.Object.Processor
             {
                 var item = _processors[i];
                 var r = item.SetPlaceholder( monitor, configuration );
+                if( r == null ) return r;
                 if( r != item )
                 {
                     if( newItems == null )

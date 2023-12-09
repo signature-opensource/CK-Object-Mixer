@@ -45,7 +45,7 @@ namespace CK.Object.Processor.Tests
                 Throw.DebugAssert( fC != null );
                 // Function
                 {
-                    var f = fC.CreateProcessor( TestHelper.Monitor, services );
+                    var f = fC.CreateProcessor( services );
                     Throw.DebugAssert( f != null );
                     f( 3712 ).Should().BeNull();
                     f( this ).Should().BeNull();
@@ -61,7 +61,7 @@ namespace CK.Object.Processor.Tests
                 // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
-                    var fH = fC.CreateDescriptor( TestHelper.Monitor, context, services );
+                    var fH = fC.CreateDescriptor( context, services );
                     Throw.DebugAssert( fH != null );
                     fH.SyncProcess( 3712 ).Should().BeNull();
                     fH.SyncProcess( this ).Should().BeNull();
@@ -81,7 +81,7 @@ namespace CK.Object.Processor.Tests
                 Throw.DebugAssert( fC != null );
                 // Function
                 {
-                    var f = fC.CreateAsyncProcessor( TestHelper.Monitor, services );
+                    var f = fC.CreateAsyncProcessor( services );
                     Throw.DebugAssert( f != null );
                     (await f( 3712 )).Should().BeNull();
                     (await f( this )).Should().BeNull();
@@ -97,7 +97,7 @@ namespace CK.Object.Processor.Tests
                 // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
-                    var fH = fC.CreateDescriptor( TestHelper.Monitor, context, services );
+                    var fH = fC.CreateDescriptor( context, services );
                     Throw.DebugAssert( fH != null );
                     (await fH.ProcessAsync( 3712 )).Should().BeNull();
                     (await fH.ProcessAsync( this )).Should().BeNull();

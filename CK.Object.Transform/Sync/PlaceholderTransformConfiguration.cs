@@ -45,15 +45,12 @@ namespace CK.Object.Transform
         /// <summary>
         /// Returns this or a new transform configuration if <paramref name="configuration"/> is a child
         /// of this configuration.
-        /// <para>
-        /// Errors are emitted in the monitor. On error, this instance is returned. 
-        /// </para>
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
         /// <param name="configuration">The configuration that will potentially replaces this placeholder.</param>
-        /// <returns>A new transform configuration or this if the section is not a child or if an error occurred.</returns>
-        public override ObjectAsyncTransformConfiguration SetPlaceholder( IActivityMonitor monitor,
-                                                                          IConfigurationSection configuration )
+        /// <returns>A new configuration (or this object if nothing changed). Null only if an error occurred.</returns>
+        public override ObjectAsyncTransformConfiguration? SetPlaceholder( IActivityMonitor monitor,
+                                                                           IConfigurationSection configuration )
         {
             if( configuration.GetParentPath().Equals( ConfigurationPath, StringComparison.OrdinalIgnoreCase ) )
             {
@@ -62,10 +59,9 @@ namespace CK.Object.Transform
                 {
                     config = new ImmutableConfigurationSection( configuration, lookupParent: _configuration );
                 }
-                var newC = builder.HasBaseType<ObjectAsyncTransformConfiguration>()
+                return builder.HasBaseType<ObjectAsyncTransformConfiguration>()
                                 ? builder.Create<ObjectAsyncTransformConfiguration>( monitor, config )
                                 : builder.Create<ObjectTransformConfiguration>( monitor, config );
-                if( newC != null ) return newC;
             }
             return this;
         }

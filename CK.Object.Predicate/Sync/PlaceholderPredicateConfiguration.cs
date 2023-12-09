@@ -45,14 +45,11 @@ namespace CK.Object.Predicate
         /// <summary>
         /// Returns this or a new predicate configuration if <paramref name="configuration"/> is a child
         /// of this configuration.
-        /// <para>
-        /// Errors are emitted in the monitor. On error, this instance is returned. 
-        /// </para>
         /// </summary>
         /// <param name="monitor">The monitor to use.</param>
         /// <param name="configuration">The configuration that will potentially replaces this placeholder.</param>
-        /// <returns>A new predicate configuration or this if the section is not a child or if an error occurred.</returns>
-        public override ObjectAsyncPredicateConfiguration SetPlaceholder( IActivityMonitor monitor,
+        /// <returns>A new configuration (or this object if nothing changed). Null only if an error occurred.</returns>
+        public override ObjectAsyncPredicateConfiguration? SetPlaceholder( IActivityMonitor monitor,
                                                                           IConfigurationSection configuration )
         {
             if( configuration.GetParentPath().Equals( ConfigurationPath, StringComparison.OrdinalIgnoreCase ) )
@@ -62,10 +59,9 @@ namespace CK.Object.Predicate
                 {
                     config = new ImmutableConfigurationSection( configuration, lookupParent: _configuration );
                 }
-                var newC = builder.HasBaseType<ObjectAsyncPredicateConfiguration>()
+                return builder.HasBaseType<ObjectAsyncPredicateConfiguration>()
                             ? builder.Create<ObjectAsyncPredicateConfiguration>( monitor, config )
                             : builder.Create<ObjectPredicateConfiguration>( monitor, config );
-                if( newC != null ) return newC;
             }
             return this;
         }

@@ -55,18 +55,18 @@ namespace CK.Object.Transform
             }
 
         }
-        public override ObjectAsyncTransformConfiguration SetPlaceholder( IActivityMonitor monitor,
-                                                                          IConfigurationSection configuration )
+        public override ObjectAsyncTransformConfiguration? SetPlaceholder( IActivityMonitor monitor,
+                                                                           IConfigurationSection configuration )
         {
 
             return DoSetPlaceholder( monitor, configuration, this, _transforms, ConfigurationPath );
         }
 
-        internal static ObjectAsyncTransformConfiguration DoSetPlaceholder( IActivityMonitor monitor,
-                                                                            IConfigurationSection configuration,
-                                                                            ObjectAsyncTransformConfiguration @this,
-                                                                            IReadOnlyList<ObjectAsyncTransformConfiguration> predicates,
-                                                                            string configurationPath )
+        internal static ObjectAsyncTransformConfiguration? DoSetPlaceholder( IActivityMonitor monitor,
+                                                                             IConfigurationSection configuration,
+                                                                             ObjectAsyncTransformConfiguration @this,
+                                                                             IReadOnlyList<ObjectAsyncTransformConfiguration> predicates,
+                                                                             string configurationPath )
         {
             Throw.CheckNotNullArgument( monitor );
             Throw.CheckNotNullArgument( configuration );
@@ -82,6 +82,7 @@ namespace CK.Object.Transform
             {
                 var item = predicates[i];
                 var r = item.SetPlaceholder( monitor, configuration );
+                if( r == null ) return null;
                 if( r != item )
                 {
                     if( newItems == null )
