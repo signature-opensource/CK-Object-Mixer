@@ -11,7 +11,7 @@
     <Compile Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity" Version="0.3.1--0015-develop" />
+    <PackageReference Include="CK.AppIdentity" Version="0.3.1--0016-develop" />
     <PackageReference Include="CK.Globalization" Version="0.4.1--0002-develop" />
   </ItemGroup>
   <ItemGroup>
