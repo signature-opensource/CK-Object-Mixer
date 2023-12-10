@@ -6,7 +6,7 @@
     <LangVersion>11</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.Testing.Monitoring" Version="8.1.1--0007-develop" />
+    <PackageReference Include="CK.Testing.Monitoring" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageReference Include="NUnit" Version="3.13.3" />
