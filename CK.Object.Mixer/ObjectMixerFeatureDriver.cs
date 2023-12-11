@@ -7,13 +7,26 @@ using System.Threading.Tasks;
 
 namespace CK.Object.Mixer
 {
+    /// <summary>
+    /// Handles "ObjectMixers" configurations on parties. <see cref="ILocalParty.LocalConfiguration"/> is used
+    /// for the <see cref="ApplicationIdentityService"/> and any <see cref="ITenantDomainParty"/>.
+    /// </summary>
     public class ObjectMixerFeatureDriver : ApplicationIdentityFeatureDriver
     {
+        /// <summary>
+        /// Initializes a new <see cref="ObjectMixerFeatureDriver"/>.
+        /// </summary>
+        /// <param name="s">The identity service.</param>
         public ObjectMixerFeatureDriver( ApplicationIdentityService s )
             : base( s, true )
         {
         }
 
+        /// <summary>
+        /// Handles "ObjectMixers" to populate <see cref="ObjectMixerFeature.Configurations"/>.
+        /// </summary>
+        /// <param name="context">Setup context.</param>
+        /// <returns>True on success, false on error.</returns>
         protected override Task<bool> SetupAsync( FeatureLifetimeContext context )
         {
             bool success = true;
@@ -31,11 +44,22 @@ namespace CK.Object.Mixer
             return Task.FromResult( success );
         }
 
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
+        /// <param name="context">The teardown context.</param>
+        /// <returns>The awaitable.</returns>
         protected override Task TeardownAsync( FeatureLifetimeContext context )
         {
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Handles "ObjectMixers" to populate <see cref="ObjectMixerFeature.Configurations"/>.
+        /// </summary>
+        /// <param name="context">Setup context.</param>
+        /// <param name="party">The dynamic party to initialize.</param>
+        /// <returns>True on success, false on error.</returns>
         protected override Task<bool> SetupDynamicRemoteAsync( FeatureLifetimeContext context, IOwnedParty party )
         {
             if( IsAllowedFeature( party ) )
@@ -45,6 +69,12 @@ namespace CK.Object.Mixer
             return Task.FromResult( true );
         }
 
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
+        /// <param name="context">The teardown context.</param>
+        /// <param name="party">The dynamic party to cleanup.</param>
+        /// <returns>The awaitable.</returns>
         protected override Task TeardownDynamicRemoteAsync( FeatureLifetimeContext context, IOwnedParty party )
         {
             return Task.CompletedTask;

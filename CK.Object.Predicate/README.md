@@ -300,5 +300,5 @@ Because these descriptors have the primary purpose to "explain" the configured p
 
 ## Placeholder support.
 
-Configuration extensibility is supported thanks to the Placeholder pattern described here:
-[../CK.Configuration/Tests/ConfigurationPlugins/StrategyPlugin/ExtensibleConfiguration](../Tests/ConfigurationPlugins/StrategyPlugin/ExtensibleConfiguration/README.md).
+Configuration extensibility is supported thanks to the Placeholder pattern described
+[in CK.Configuration](https://github.com/signature-opensource/CK-Configuration/blob/master/Tests/ConfigurationPlugins/StrategyPlugin/ExtensibleConfiguration/README.md).

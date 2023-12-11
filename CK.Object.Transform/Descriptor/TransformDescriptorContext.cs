@@ -53,7 +53,7 @@ namespace CK.Object.Transform
         /// <para>
         /// When this method returns a non null object, the transformation is skipped and the result is the returned object.
         /// Implementation should almost always return null except when <paramref name="o"/> is an exception: in this case,
-        /// the exception should be returned. This gently propagates any error received by <see cref="OnTransformError(IObjectTransformDescriptor, object, Exception)"/>
+        /// the exception should be returned. This gently propagates any error received by <see cref="OnTransformError(ObjectTransformDescriptor, object, Exception)"/>
         /// up the descriptors.
         /// </para>
         /// <para>
@@ -73,7 +73,7 @@ namespace CK.Object.Transform
         /// <para>
         /// When null is returned, the exception is rethrown.
         /// When a non null object is returned, it becomes the result of the transformation. 
-        /// Implementations should return the exception: whith the help of <see cref="OnBeforeTransform(IObjectTransformDescriptor, object)"/>
+        /// Implementations should return the exception: whith the help of <see cref="OnBeforeTransform(ObjectTransformDescriptor, object)"/>
         /// the exception will be propagated up to the root descriptor.
         /// </para>
         /// <para>
@@ -103,7 +103,7 @@ namespace CK.Object.Transform
         }
 
         /// <summary>
-        /// Called after transformation unless <see cref="OnTransformError(IObjectTransformDescriptor, object, Exception)"/> has been called.
+        /// Called after transformation unless <see cref="OnTransformError(ObjectTransformDescriptor, object, Exception)"/> has been called.
         /// This default implementation returns the <paramref name="result"/> but when overridden this may be changed (but this is unexpected).
         /// <para>
         /// Note that to avoid an illegal null object to be propagated, if this method returns null (that should not happen)

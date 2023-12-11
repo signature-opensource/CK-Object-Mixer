@@ -72,7 +72,7 @@ namespace CK.Object.Transform
         public bool IsSequence => !_transforms.IsDefault;
 
         /// <summary>
-        /// Gets the description of the group if <see cref="IsGroup"/> is true otherwise null.
+        /// Gets the description of the sequence if <see cref="IsSequence"/> is true otherwise null.
         /// </summary>
         public ISequenceTransformConfiguration? SequenceConfiguration => _configuration as ISequenceTransformConfiguration;
 

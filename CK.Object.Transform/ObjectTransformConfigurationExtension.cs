@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace CK.Object.Transform
 {
+    /// <summary>
+    /// Extends <see cref="ObjectAsyncTransformConfiguration"/>.
+    /// </summary>
     public static class ObjectTransformConfigurationExtension
     {
         /// <summary>
@@ -12,9 +15,9 @@ namespace CK.Object.Transform
         /// <see cref="ObjectAsyncTransformConfiguration.CreateAsyncTransform(IServiceProvider)"/> is called
         /// with an empty <see cref="IServiceProvider"/>.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
+        /// <param name="this">This transform.</param>
         /// <returns>A configured transform or null for an identity transform.</returns>
-        public static Func<object, ValueTask<object>>? CreateAsyncTransform( this ObjectAsyncTransformConfiguration @this, IActivityMonitor monitor )
+        public static Func<object, ValueTask<object>>? CreateAsyncTransform( this ObjectAsyncTransformConfiguration @this )
         {
             return @this.CreateAsyncTransform( EmptyServiceProvider.Instance );
         }
@@ -24,7 +27,7 @@ namespace CK.Object.Transform
         /// <see cref="ObjectAsyncTransformConfiguration.CreateDescriptor(TransformDescriptorContext, IServiceProvider)"/>
         /// is called with an empty <see cref="IServiceProvider"/>.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
+        /// <param name="this">This transform.</param>
         /// <param name="context">The descriptor context.</param>
         /// <returns>A configured descriptor bound to the descriptor context or null for an identity transform.</returns>
         public static ObjectTransformDescriptor? CreateDescriptor( this ObjectAsyncTransformConfiguration @this, TransformDescriptorContext context )
@@ -37,9 +40,9 @@ namespace CK.Object.Transform
         /// <see cref="ObjectTransformConfiguration.CreateTransform(IServiceProvider)"/> is called
         /// with an empty <see cref="IServiceProvider"/>.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
+        /// <param name="this">This transform.</param>
         /// <returns>A configured object Transform or null for an identity transform.</returns>
-        public static Func<object, object>? CreateTransform( this ObjectTransformConfiguration @this, IActivityMonitor monitor )
+        public static Func<object, object>? CreateTransform( this ObjectTransformConfiguration @this )
         {
             return @this.CreateTransform( EmptyServiceProvider.Instance );
         }

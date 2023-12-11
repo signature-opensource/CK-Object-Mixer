@@ -29,6 +29,11 @@ namespace CK.Object.Mixer
         bool _errorInConfiguredProcessor;
         bool _errorInConfiguredCondition;
 
+        /// <summary>
+        /// Initializes a new <see cref="ObjectMixer"/>.
+        /// </summary>
+        /// <param name="services">Services provider for predicates, transforms or processors that may depend on services.</param>
+        /// <param name="configuration">Mixer configuration.</param>
         internal protected ObjectMixer( IServiceProvider services, ObjectMixerConfiguration configuration )
         {
             _services = services;

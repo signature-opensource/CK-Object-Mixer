@@ -53,7 +53,7 @@ namespace CK.Object.Transform.Tests
             ObjectTransformConfiguration.AddResolver( builder );
             var fC = builder.Create<ObjectTransformConfiguration>( TestHelper.Monitor, GetConfiguration() );
             Throw.DebugAssert( fC != null );
-            var f = fC.CreateTransform( TestHelper.Monitor );
+            var f = fC.CreateTransform();
             Throw.DebugAssert( f != null );
 
             f( "Hello" ).Should().Be( "Before-Hello-After-OneMore" );
@@ -69,7 +69,7 @@ namespace CK.Object.Transform.Tests
             var fC = builder.Create<ObjectAsyncTransformConfiguration>( TestHelper.Monitor, GetConfiguration() );
             Throw.DebugAssert( fC != null );
 
-            var f = fC.CreateAsyncTransform( TestHelper.Monitor );
+            var f = fC.CreateAsyncTransform();
             Throw.DebugAssert( f != null );
             (await f( "Hello" )).Should().Be( "Before-Hello-After-OneMore" );
             (await f( 0 )).Should().Be( "Before-0-After-OneMore" );
@@ -115,7 +115,7 @@ namespace CK.Object.Transform.Tests
             ObjectTransformConfiguration.AddResolver( builder );
             var fC = builder.Create<ObjectTransformConfiguration>( TestHelper.Monitor, GetStringOnlyConfiguration() );
             Throw.DebugAssert( fC != null );
-            var f = fC.CreateTransform( TestHelper.Monitor );
+            var f = fC.CreateTransform();
             Throw.DebugAssert( f != null );
 
             f( "Works with a string" ).Should().Be( "Before-Works with a string-After-OneMore" );
@@ -146,7 +146,7 @@ namespace CK.Object.Transform.Tests
             ObjectAsyncTransformConfiguration.AddResolver( builder );
             var fC = builder.Create<ObjectAsyncTransformConfiguration>( TestHelper.Monitor, GetStringOnlyConfiguration() );
             Throw.DebugAssert( fC != null );
-            var f = fC.CreateAsyncTransform( TestHelper.Monitor );
+            var f = fC.CreateAsyncTransform();
             Throw.DebugAssert( f != null );
 
             (await f( "Works with a string" )).Should().Be( "Before-Works with a string-After-OneMore" );

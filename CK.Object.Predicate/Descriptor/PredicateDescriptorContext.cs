@@ -40,7 +40,7 @@ namespace CK.Object.Predicate
 
         /// <summary>
         /// Gets whether at least one error occurred.
-        /// When true, <see cref="OnBeforePredicate(IObjectPredicateDescriptor, object)"/> returns false to skip any further evaulations.
+        /// When true, <see cref="OnBeforePredicate(ObjectPredicateDescriptor, object)"/> returns false to skip any further evaulations.
         /// </summary>
         public bool HasError => _errors != null && _errors.Count > 0;
 
@@ -94,7 +94,7 @@ namespace CK.Object.Predicate
         }
 
         /// <summary>
-        /// Called after predicate evaluation unless <see cref="OnPredicateError(IObjectPredicateDescriptor, object, Exception)"/> has been called.
+        /// Called after predicate evaluation unless <see cref="OnPredicateError(ObjectPredicateDescriptor, object, Exception)"/> has been called.
         /// Implementations should always return the <paramref name="result"/> but when overridden this may be changed (but this is unexpected).
         /// </summary>
         /// <param name="source">The source predicate.</param>

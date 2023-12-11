@@ -12,7 +12,6 @@ using System.Threading;
 
 namespace CK.Object.Mixer
 {
-
     /// <summary>
     /// The mixer feature holds factories of configured mixers.
     /// </summary>
@@ -162,18 +161,35 @@ namespace CK.Object.Mixer
         /// </summary>
         public ImmutableArray<Factory> Configurations => _configurations;
 
+        /// <summary>
+        /// Tries to find a factory with a given <see cref="Factory.Name"/> or returns null.
+        /// </summary>
+        /// <param name="name">The factory name.</param>
+        /// <returns>The factory or null if not found.</returns>
         public Factory? FindFactory( string name )
         {
             Throw.CheckNotNullArgument( name );
             return _configurations.FirstOrDefault( f => f.Name == name );
         }
 
+        /// <summary>
+        /// Tries to find the first factory for a mixer that outputs <paramref name="mixerOutputType"/> or returns null.
+        /// </summary>
+        /// <param name="mixerOutputType">The mixer output type.</param>
+        /// <returns>The factory or null if not found.</returns>
         public Factory? FindFactory( Type mixerOutputType )
         {
             Throw.CheckNotNullArgument( mixerOutputType );
             return _configurations.FirstOrDefault( f => mixerOutputType.IsAssignableFrom( f.OutputType ) );
         }
 
+        /// <summary>
+        /// Tries to find the factory with a given <see cref="Factory.Name"/> that must output <paramref name="mixerOutputType"/>
+        /// or returns null.
+        /// </summary>
+        /// <param name="mixerOutputType">The required mixer output type.</param>
+        /// <param name="name">The required mixer name.</param>
+        /// <returns>The factory or null if not found.</returns>
         public Factory? FindFactory( Type mixerOutputType, string name )
         {
             var f = FindFactory( name );
@@ -184,6 +200,11 @@ namespace CK.Object.Mixer
             return f;
         }
 
+        /// <summary>
+        /// Find a factory with a given <see cref="Factory.Name"/> or throws an <see cref="ArgumentException"/>.
+        /// </summary>
+        /// <param name="name">The factory name.</param>
+        /// <returns>The factory.</returns>
         public Factory FindRequiredFactory( string name )
         {
             var f = FindFactory( name );
@@ -194,6 +215,11 @@ namespace CK.Object.Mixer
             return f;
         }
 
+        /// <summary>
+        /// Find the first factory for a mixer that outputs <paramref name="mixerOutputType"/> or throws an <see cref="ArgumentException"/>.
+        /// </summary>
+        /// <param name="mixerOutputType">The mixer output type.</param>
+        /// <returns>The factory.</returns>
         public Factory FindRequiredFactory( Type mixerOutputType )
         {
             var f = FindFactory( mixerOutputType );
@@ -204,6 +230,13 @@ namespace CK.Object.Mixer
             return f;
         }
 
+        /// <summary>
+        /// Finds the factory with a given <see cref="Factory.Name"/> that must output <paramref name="mixerOutputType"/>
+        /// or throws an <see cref="ArgumentException"/>.
+        /// </summary>
+        /// <param name="mixerOutputType">The required mixer output type.</param>
+        /// <param name="name">The required mixer name.</param>
+        /// <returns>The factory.</returns>
         public Factory FindRequiredFactory( Type mixerOutputType, string name )
         {
             var f = FindRequiredFactory( name );
