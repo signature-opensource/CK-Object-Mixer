@@ -43,9 +43,9 @@ namespace CK.Object.Transform
                                                                                .ToImmutableArray()!;
             if( items.Length == 0 ) return null;
             if( items.Length == 1 ) return items[0];
-            return o => Apply( items, o );
+            return o => ApplyAsync( items, o );
 
-            static async ValueTask<object> Apply( ImmutableArray<Func<object, ValueTask<object>>> transformers, object o )
+            static async ValueTask<object> ApplyAsync( ImmutableArray<Func<object, ValueTask<object>>> transformers, object o )
             {
                 foreach( var t in transformers )
                 {

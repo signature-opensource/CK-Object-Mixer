@@ -39,7 +39,7 @@ namespace CK.Object.Predicate.Tests
             {
                 var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config.GetRequiredSection( "Condition" ) );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreatePredicate( TestHelper.Monitor );
+                var f = fC.CreatePredicate();
                 Throw.DebugAssert( f != null );
                 f( this ).Should().Be( always );
             }
@@ -105,7 +105,7 @@ namespace CK.Object.Predicate.Tests
 
                 fC.GetType().Name.Should().Be( "GroupPredicateConfiguration", "Synchronous group." );
 
-                var f = fC.CreatePredicate( TestHelper.Monitor );
+                var f = fC.CreatePredicate();
                 Throw.DebugAssert( f != null );
                 f( this ).Should().BeTrue();
             }
@@ -205,7 +205,7 @@ namespace CK.Object.Predicate.Tests
             var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
 
-            var f = fC.CreatePredicate( TestHelper.Monitor );
+            var f = fC.CreatePredicate();
             Throw.DebugAssert( f != null );
             f( 0 ).Should().Be( false );
             f( "Ax" ).Should().Be( false );
@@ -296,7 +296,7 @@ namespace CK.Object.Predicate.Tests
             {
                 var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreatePredicate( TestHelper.Monitor );
+                var f = fC.CreatePredicate();
                 Throw.DebugAssert( f != null );
                 f( "With Hello! fails." ).Should().BeFalse();
                 f( "Without succeeds." ).Should().BeTrue();
@@ -336,7 +336,7 @@ namespace CK.Object.Predicate.Tests
             {
                 var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreatePredicate( TestHelper.Monitor );
+                var f = fC.CreatePredicate();
                 Throw.DebugAssert( f != null );
                 f( 0 ).Should().BeFalse();
                 f( this ).Should().BeFalse();
