@@ -11,8 +11,8 @@
     <Compile Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity" Version="0.4.1--0017-develop" />
-    <PackageReference Include="CK.Globalization" Version="0.6.1--0019-develop" />
+    <PackageReference Include="CK.AppIdentity" Version="0.4.1--0018-develop" />
+    <PackageReference Include="CK.Globalization" Version="0.6.1--0021-develop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Object.Processor\CK.Object.Processor.csproj" />
