@@ -29,6 +29,7 @@ namespace CK.Object.Processor.Tests
                         },
                         {
                             "Type": "AddRandomFriendToUser, Test",
+                            "MinAge": 40
                         }
                     ]
                 }
@@ -156,7 +157,7 @@ namespace CK.Object.Processor.Tests
                 Throw.DebugAssert( fC != null );
                 // Function
                 {
-                    var f = fC.CreateProcessor( TestHelper.Monitor );
+                    var f = fC.CreateProcessor();
                     Throw.DebugAssert( f != null );
                     f( 3712 ).Should().BeNull();
                     f( this ).Should().BeNull();
@@ -170,7 +171,7 @@ namespace CK.Object.Processor.Tests
                 // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
-                    var fH = fC.CreateDescriptor( TestHelper.Monitor, context );
+                    var fH = fC.CreateDescriptor( context );
                     Throw.DebugAssert( fH != null );
                     fH.SyncProcess( 3712 ).Should().BeNull();
                     fH.SyncProcess( this ).Should().BeNull();
@@ -187,7 +188,7 @@ namespace CK.Object.Processor.Tests
                 Throw.DebugAssert( fC != null );
                 // Function
                 {
-                    var f = fC.CreateAsyncProcessor( TestHelper.Monitor );
+                    var f = fC.CreateAsyncProcessor();
                     Throw.DebugAssert( f != null );
                     (await f( 3712 )).Should().BeNull();
                     (await f( this )).Should().BeNull();
@@ -200,7 +201,7 @@ namespace CK.Object.Processor.Tests
                 // Descriptor
                 var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
                 {
-                    var fH = fC.CreateDescriptor( TestHelper.Monitor, context );
+                    var fH = fC.CreateDescriptor( context );
                     Throw.DebugAssert( fH != null );
                     (await fH.ProcessAsync( 3712 )).Should().BeNull();
                     (await fH.ProcessAsync( this )).Should().BeNull();

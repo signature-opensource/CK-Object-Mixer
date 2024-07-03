@@ -48,7 +48,7 @@ namespace CK.Object.Predicate.Tests
                 }
                 var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreatePredicate( TestHelper.Monitor );
+                var f = fC.CreatePredicate();
                 Throw.DebugAssert( f != null );
                 f( "This one will always be the Sync one" ).Should().BeTrue();
                 f( "NOT" + "HERE!" ).Should().BeFalse();
@@ -61,7 +61,7 @@ namespace CK.Object.Predicate.Tests
                 // The Sync can be resolved.
                 var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
                 Throw.DebugAssert( fC != null );
-                var f = fC.CreatePredicate( TestHelper.Monitor );
+                var f = fC.CreatePredicate();
                 Throw.DebugAssert( f != null );
                 f( "This one will always be the Sync one" ).Should().BeTrue();
                 f( "NOT" + "HERE!" ).Should().BeFalse();

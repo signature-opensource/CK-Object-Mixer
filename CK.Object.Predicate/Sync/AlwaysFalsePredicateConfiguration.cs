@@ -21,6 +21,11 @@ namespace CK.Object.Predicate
         {
         }
 
+        /// <summary>
+        /// Always false.
+        /// </summary>
+        /// <param name="services">Unused.</param>
+        /// <returns>A always false predicate.</returns>
         public override Func<object, bool> CreatePredicate( IServiceProvider services )
         {
             return static _ => false;

@@ -62,6 +62,7 @@ namespace CK.Object.Processor
         /// <param name="monitor">The monitor that must be used to signal errors and warnings.</param>
         /// <param name="builder">The builder.</param>
         /// <param name="configuration">The configuration for this object.</param>
+        /// <param name="processors">The subordinated processors.</param>
         public ObjectProcessorConfiguration( IActivityMonitor monitor,
                                              TypedConfigurationBuilder builder,
                                              ImmutableConfigurationSection configuration,

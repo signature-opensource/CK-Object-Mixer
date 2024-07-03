@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace CK.Object.Predicate
 {
+    /// <summary>
+    /// Base class for synchronous predicates.
+    /// </summary>
     public static class ObjectPredicateConfigurationExtension
     {
         /// <summary>
@@ -22,6 +25,7 @@ namespace CK.Object.Predicate
         /// <see cref="ObjectAsyncPredicateConfiguration.CreateDescriptor(PredicateDescriptorContext, IServiceProvider)"/>
         /// is called with an empty <see cref="IServiceProvider"/>.
         /// </summary>
+        /// <param name="this">This predicate.</param>
         /// <param name="context">The descriptor context.</param>
         /// <returns>A configured descriptor bound to the descriptor context or null for an empty predicate.</returns>
         public static ObjectPredicateDescriptor? CreateDescriptor( this ObjectAsyncPredicateConfiguration @this, PredicateDescriptorContext context )
@@ -34,9 +38,9 @@ namespace CK.Object.Predicate
         /// <see cref="ObjectPredicateConfiguration.CreatePredicate(IServiceProvider)"/> is called
         /// with an empty <see cref="IServiceProvider"/>.
         /// </summary>
-        /// <param name="monitor">The monitor that must be used to signal errors.</param>
+        /// <param name="this">This predicate.</param>
         /// <returns>A configured object predicate or null for an empty predicate.</returns>
-        public static Func<object, bool>? CreatePredicate( this ObjectPredicateConfiguration @this, IActivityMonitor monitor )
+        public static Func<object, bool>? CreatePredicate( this ObjectPredicateConfiguration @this )
         {
             return @this.CreatePredicate( EmptyServiceProvider.Instance );
         }

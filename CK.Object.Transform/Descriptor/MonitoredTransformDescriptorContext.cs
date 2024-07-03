@@ -16,12 +16,13 @@ namespace CK.Object.Transform
         readonly LogLevel _level;
 
         /// <summary>
-        /// Initializes a new transform descriptor. Use <paramref name="groupLevel"/> = <see cref="LogLevel.None"/> to not open a
+        /// Initializes a new transform descriptor. Use <paramref name="level"/> = <see cref="LogLevel.None"/> to not open a
         /// group for each transform: only error will be logged.
         /// </summary>
         /// <param name="monitor">The monitor that will receive evaluation details.</param>
         /// <param name="tags">Optional tags for log entries.</param>
         /// <param name="level">Default group level. Use <see cref="LogLevel.None"/> to not open a group for each transform.</param>
+        /// <param name="userMessageCollector">Optional user message collector.</param>
         public MonitoredTransformDescriptorContext( IActivityMonitor monitor,
                                                     CKTrait? tags = null,
                                                     LogLevel level = LogLevel.Trace,

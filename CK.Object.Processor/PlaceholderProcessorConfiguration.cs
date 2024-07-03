@@ -28,6 +28,7 @@ namespace CK.Object.Processor
         /// <param name="monitor">The monitor.</param>
         /// <param name="builder">The builder.</param>
         /// <param name="configuration">The placeholder configuration.</param>
+        /// <param name="processors">The (invalid) configured "Processors".</param>
         public PlaceholderProcessorConfiguration( IActivityMonitor monitor,
                                                   TypedConfigurationBuilder builder,
                                                   ImmutableConfigurationSection configuration,

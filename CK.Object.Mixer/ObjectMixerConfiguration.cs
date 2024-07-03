@@ -22,7 +22,6 @@ namespace CK.Object.Mixer
     /// </para>
     /// <para>
     /// This non generic configuration outputs <see cref="Object"/> constrained by the <see cref="OutputType"/>.
-    /// In practice, the typed <see cref="ObjectMixerConfiguration{T}"/> should be used as a base class.
     /// </para>
     /// </summary>
     public class ObjectMixerConfiguration : ISupportConfigurationPlaceholder<ObjectMixerConfiguration>
@@ -87,7 +86,7 @@ namespace CK.Object.Mixer
 
         /// <summary>
         /// Gets the maximal number of processes that can be applied to an initial object
-        /// (unless it is accepted) before being rejected (in <see cref="Result.Rejected"/>).
+        /// (unless it is accepted) before being rejected (in <see cref="IObjectMixerResult{T}.Rejected"/>).
         /// <para>
         /// Must be between 1 and 1000. Defaults to 4.
         /// </para>

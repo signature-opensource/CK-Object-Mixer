@@ -8,7 +8,7 @@ instead of object predicates (`Func<object,bool>` and `Func<object,ValueTask<boo
 Transforms are available in the same mixed Sync and Async just like Predicates. All synchronous
 transforms are also by design asynchronous ones.
 
-They both support Placeholder (see [ExtensibleConfiguration](../Tests/ConfigurationPlugins/StrategyPlugin/ExtensibleConfiguration/README.md]).
+They both support Placeholder (see [CK.Configuration ExtensibleConfiguration](https://github.com/signature-opensource/CK-Configuration/blob/master/Tests/ConfigurationPlugins/StrategyPlugin/ExtensibleConfiguration/README.md]).
 
 The differences (other than the function signatures) are:
 - The `null` function for Transform is the identity function whereas it is the "empty predicate" for Predicate.
