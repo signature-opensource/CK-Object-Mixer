@@ -4,7 +4,7 @@
     <LangVersion>11</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.Configuration" Version="0.4.0" />
-    <PackageReference Include="CK.Globalization" Version="0.7.0" />
+    <PackageReference Include="CK.Configuration" Version="0.0.0--04ytpiv-develop" />
+    <PackageReference Include="CK.Globalization" Version="0.0.0--04ytpix-develop" />
   </ItemGroup>
 </Project>
