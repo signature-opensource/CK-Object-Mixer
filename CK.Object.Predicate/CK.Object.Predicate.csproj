@@ -5,6 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.Configuration" Version="0.0.0--053imd3-develop" />
-    <PackageReference Include="CK.Globalization" Version="0.0.0--053iji0-develop" />
+    <PackageReference Include="CK.Globalization" Version="0.0.0--053inyv-develop" />
   </ItemGroup>
 </Project>
