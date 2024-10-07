@@ -15,8 +15,8 @@ public class SyncAndAsyncPredicateTests
     public async Task sync_or_async_predicate_Async()
     {
         var config = ImmutableConfigurationSection.CreateFromJson( "Root",
-            $$"""
-            {
+                $$"""
+                {
                     "Assemblies": { "CK.Object.Predicate.Tests": "Test"},
                     "Type": "All",
                     "Predicates": [
@@ -93,8 +93,8 @@ public class SyncAndAsyncPredicateTests
     public async Task forcing_async_predicate_Async()
     {
         var config = ImmutableConfigurationSection.CreateFromJson( "Root",
-            $$"""
-            {
+                $$"""
+                {
                     "Assemblies": { "CK.Object.Predicate.Tests": "Test"},
                     "Type": "Any",
                     "Predicates": [
