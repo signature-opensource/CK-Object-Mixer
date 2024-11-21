@@ -1,15 +1,14 @@
 using CK.Core;
 
-namespace CK.Object.Transform
+namespace CK.Object.Transform;
+
+/// <summary>
+/// Minimal view of a transform configuration.
+/// </summary>
+public interface IObjectTransformConfiguration
 {
     /// <summary>
-    /// Minimal view of a transform configuration.
+    /// Gets the configuration path.
     /// </summary>
-    public interface IObjectTransformConfiguration
-    {
-        /// <summary>
-        /// Gets the configuration path.
-        /// </summary>
-        string ConfigurationPath { get; }
-    }
+    string ConfigurationPath { get; }
 }
