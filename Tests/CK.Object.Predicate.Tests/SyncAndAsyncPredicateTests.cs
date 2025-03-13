@@ -1,5 +1,5 @@
 using CK.Core;
-using FluentAssertions;
+using Shouldly;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using static CK.Testing.MonitorTestHelper;
@@ -43,15 +43,15 @@ public class SyncAndAsyncPredicateTests
             using( TestHelper.Monitor.CollectTexts( out var logs ) )
             {
                 var c = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
-                c.Should().BeNull();
-                logs.Should().Contain( "Unable to find a resolver for 'ObjectAsyncPredicateConfiguration' (Registered resolvers Base Types are: 'CK.Object.Predicate.ObjectPredicateConfiguration')." );
+                c.ShouldBeNull();
+                logs.ShouldContain( "Unable to find a resolver for 'ObjectAsyncPredicateConfiguration' (Registered resolvers Base Types are: 'CK.Object.Predicate.ObjectPredicateConfiguration')." );
             }
             var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
             var f = fC.CreatePredicate();
             Throw.DebugAssert( f != null );
-            f( "This one will always be the Sync one" ).Should().BeTrue();
-            f( "NOT" + "HERE!" ).Should().BeFalse();
+            f( "This one will always be the Sync one" ).ShouldBeTrue();
+            f( "NOT" + "HERE!" ).ShouldBeFalse();
         }
         // Using regular Resolver registration.
         // When resolving a sync predicate, the sync version has been selected.
@@ -63,8 +63,8 @@ public class SyncAndAsyncPredicateTests
             Throw.DebugAssert( fC != null );
             var f = fC.CreatePredicate();
             Throw.DebugAssert( f != null );
-            f( "This one will always be the Sync one" ).Should().BeTrue();
-            f( "NOT" + "HERE!" ).Should().BeFalse();
+            f( "This one will always be the Sync one" ).ShouldBeTrue();
+            f( "NOT" + "HERE!" ).ShouldBeFalse();
         }
         // When resolving a async predicate, the async version has been selected for "IsInTextFile"
         // but the second "IsInTextFilePredicate" is the sync one.
@@ -76,16 +76,16 @@ public class SyncAndAsyncPredicateTests
             Throw.DebugAssert( fC != null );
             var f = fC.CreateAsyncPredicate();
             Throw.DebugAssert( f != null );
-            (await f( "This one will always be the Sync one" )).Should().BeTrue();
-            (await f( "NOT" + "HERE!" )).Should().BeFalse();
+            (await f( "This one will always be the Sync one" )).ShouldBeTrue();
+            (await f( "NOT" + "HERE!" )).ShouldBeFalse();
 
             // The root cannot be synchronous.
-            fC.Synchronous.Should().BeNull();
+            fC.Synchronous.ShouldBeNull();
             // The first "IsInTextFile" resolved to "IsInTextFileAsyncPredicate".
             // The second explicitly "IsInTextFilePredicate" is forced to be sync.
             var g = (IGroupPredicateConfiguration)fC;
-            g.Predicates[0].GetType().Name.Should().Be( "IsInTextFileAsyncPredicateConfiguration" );
-            g.Predicates[1].GetType().Name.Should().Be( "IsInTextFilePredicateConfiguration" );
+            g.Predicates[0].GetType().Name.ShouldBe( "IsInTextFileAsyncPredicateConfiguration" );
+            g.Predicates[1].GetType().Name.ShouldBe( "IsInTextFilePredicateConfiguration" );
         }
     }
 
@@ -117,14 +117,14 @@ public class SyncAndAsyncPredicateTests
             using( TestHelper.Monitor.CollectTexts( out var logs ) )
             {
                 var c = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
-                c.Should().BeNull();
-                logs.Should().Contain( "Unable to find a resolver for 'ObjectAsyncPredicateConfiguration' (Registered resolvers Base Types are: 'CK.Object.Predicate.ObjectPredicateConfiguration')." );
+                c.ShouldBeNull();
+                logs.ShouldContain( "Unable to find a resolver for 'ObjectAsyncPredicateConfiguration' (Registered resolvers Base Types are: 'CK.Object.Predicate.ObjectPredicateConfiguration')." );
             }
             using( TestHelper.Monitor.CollectTexts( out var logs ) )
             {
                 var c = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
-                c.Should().BeNull();
-                logs.Should().Contain( "The 'IsInTextFileAsyncPredicate, Test' type name resolved to 'CK.Object.Predicate.IsInTextFileAsyncPredicateConfiguration' but this type is not compatible with 'CK.Object.Predicate.ObjectPredicateConfiguration'. (Configuration 'Root:Predicates:0:Type'.)" );
+                c.ShouldBeNull();
+                logs.ShouldContain( "The 'IsInTextFileAsyncPredicate, Test' type name resolved to 'CK.Object.Predicate.IsInTextFileAsyncPredicateConfiguration' but this type is not compatible with 'CK.Object.Predicate.ObjectPredicateConfiguration'. (Configuration 'Root:Predicates:0:Type'.)" );
             }
         }
         // Using ObjectAsyncPredicateConfiguration.AddResolver:
@@ -137,15 +137,15 @@ public class SyncAndAsyncPredicateTests
             using( TestHelper.Monitor.CollectTexts( out var logs ) )
             {
                 var c = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
-                c.Should().BeNull();
-                logs.Should().Contain( "The 'IsInTextFileAsyncPredicate, Test' type name resolved to 'CK.Object.Predicate.IsInTextFileAsyncPredicateConfiguration' but this type is not compatible with 'CK.Object.Predicate.ObjectPredicateConfiguration'. (Configuration 'Root:Predicates:0:Type'.)" );
+                c.ShouldBeNull();
+                logs.ShouldContain( "The 'IsInTextFileAsyncPredicate, Test' type name resolved to 'CK.Object.Predicate.IsInTextFileAsyncPredicateConfiguration' but this type is not compatible with 'CK.Object.Predicate.ObjectPredicateConfiguration'. (Configuration 'Root:Predicates:0:Type'.)" );
             }
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
             var f = fC.CreateAsyncPredicate();
             Throw.DebugAssert( f != null );
-            (await f( "This one will always be the Sync one" )).Should().BeTrue();
-            (await f( "NOT" + "HERE!" )).Should().BeFalse();
+            (await f( "This one will always be the Sync one" )).ShouldBeTrue();
+            (await f( "NOT" + "HERE!" )).ShouldBeFalse();
         }
 
     }

@@ -1,5 +1,5 @@
 using CK.Core;
-using FluentAssertions;
+using Shouldly;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using System;
@@ -22,8 +22,8 @@ public class PredicateTests
         using( TestHelper.Monitor.CollectTexts( out var logs ) )
         {
             var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
-            fC.Should().BeNull();
-            logs.Should().Contain( "Configuration 'Root' must have children to be considered a default 'GroupPredicateConfiguration'." );
+            fC.ShouldBeNull();
+            logs.ShouldContain( "Configuration 'Root' must have children to be considered a default 'GroupPredicateConfiguration'." );
         }
     }
 
@@ -41,14 +41,14 @@ public class PredicateTests
             Throw.DebugAssert( fC != null );
             var f = fC.CreatePredicate();
             Throw.DebugAssert( f != null );
-            f( this ).Should().Be( always );
+            f( this ).ShouldBe( always );
         }
         {
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config.GetRequiredSection( "Condition" ) );
             Throw.DebugAssert( fC != null );
             var f = fC.CreateAsyncPredicate();
             Throw.DebugAssert( f != null );
-            (await f( this )).Should().Be( always );
+            (await f( this )).ShouldBe( always );
         }
     }
 
@@ -65,21 +65,21 @@ public class PredicateTests
             var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config.GetRequiredSection( "Condition" ) );
             Throw.DebugAssert( fC != null );
 
-            fC.Should().BeAssignableTo<IGroupPredicateConfiguration>();
-            ((IGroupPredicateConfiguration)fC).Predicates.Should().BeEmpty();
-            ((IGroupPredicateConfiguration)fC).All.Should().Be( t == "All" );
-            ((IGroupPredicateConfiguration)fC).Any.Should().Be( t == "Any" );
-            ((IGroupPredicateConfiguration)fC).AtLeast.Should().Be( t == "All" ? 0 : 1 );
+            fC.ShouldBeAssignableTo<IGroupPredicateConfiguration>();
+            ((IGroupPredicateConfiguration)fC).Predicates.ShouldBeEmpty();
+            ((IGroupPredicateConfiguration)fC).All.ShouldBe( t == "All" );
+            ((IGroupPredicateConfiguration)fC).Any.ShouldBe( t == "Any" );
+            ((IGroupPredicateConfiguration)fC).AtLeast.ShouldBe( t == "All" ? 0 : 1 );
         }
         {
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config.GetRequiredSection( "Condition" ) );
             Throw.DebugAssert( fC != null );
 
-            fC.Should().BeAssignableTo<IGroupPredicateConfiguration>();
-            ((IGroupPredicateConfiguration)fC).Predicates.Should().BeEmpty();
-            ((IGroupPredicateConfiguration)fC).All.Should().Be( t == "All" );
-            ((IGroupPredicateConfiguration)fC).Any.Should().Be( t == "Any" );
-            ((IGroupPredicateConfiguration)fC).AtLeast.Should().Be( t == "All" ? 0 : 1 );
+            fC.ShouldBeAssignableTo<IGroupPredicateConfiguration>();
+            ((IGroupPredicateConfiguration)fC).Predicates.ShouldBeEmpty();
+            ((IGroupPredicateConfiguration)fC).All.ShouldBe( t == "All" );
+            ((IGroupPredicateConfiguration)fC).Any.ShouldBe( t == "Any" );
+            ((IGroupPredicateConfiguration)fC).AtLeast.ShouldBe( t == "All" ? 0 : 1 );
         }
     }
 
@@ -96,35 +96,35 @@ public class PredicateTests
         {
             var fC = builder.Create<ObjectPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
-            fC.Should().BeAssignableTo<IGroupPredicateConfiguration>();
-            ((IGroupPredicateConfiguration)fC).Predicates.Should().HaveCount( 1 );
-            ((IGroupPredicateConfiguration)fC).All.Should().BeTrue();
-            ((IGroupPredicateConfiguration)fC).Any.Should().BeFalse();
-            ((IGroupPredicateConfiguration)fC).AtLeast.Should().Be( 0 );
-            ((IGroupPredicateConfiguration)fC).Predicates[0].Should().BeAssignableTo<AlwaysTruePredicateConfiguration>();
+            fC.ShouldBeAssignableTo<IGroupPredicateConfiguration>();
+            ((IGroupPredicateConfiguration)fC).Predicates.Count.ShouldBe( 1 );
+            ((IGroupPredicateConfiguration)fC).All.ShouldBeTrue();
+            ((IGroupPredicateConfiguration)fC).Any.ShouldBeFalse();
+            ((IGroupPredicateConfiguration)fC).AtLeast.ShouldBe( 0 );
+            ((IGroupPredicateConfiguration)fC).Predicates[0].ShouldBeAssignableTo<AlwaysTruePredicateConfiguration>();
 
-            fC.GetType().Name.Should().Be( "GroupPredicateConfiguration", "Synchronous group." );
+            fC.GetType().Name.ShouldBe( "GroupPredicateConfiguration", "Synchronous group." );
 
             var f = fC.CreatePredicate();
             Throw.DebugAssert( f != null );
-            f( this ).Should().BeTrue();
+            f( this ).ShouldBeTrue();
         }
         // Async
         {
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
-            fC.Should().BeAssignableTo<IGroupPredicateConfiguration>();
-            ((IGroupPredicateConfiguration)fC).Predicates.Should().HaveCount( 1 );
-            ((IGroupPredicateConfiguration)fC).All.Should().BeTrue();
-            ((IGroupPredicateConfiguration)fC).Any.Should().BeFalse();
-            ((IGroupPredicateConfiguration)fC).AtLeast.Should().Be( 0 );
-            ((IGroupPredicateConfiguration)fC).Predicates[0].Should().BeAssignableTo<AlwaysTruePredicateConfiguration>();
+            fC.ShouldBeAssignableTo<IGroupPredicateConfiguration>();
+            ((IGroupPredicateConfiguration)fC).Predicates.Count.ShouldBe( 1 );
+            ((IGroupPredicateConfiguration)fC).All.ShouldBeTrue();
+            ((IGroupPredicateConfiguration)fC).Any.ShouldBeFalse();
+            ((IGroupPredicateConfiguration)fC).AtLeast.ShouldBe( 0 );
+            ((IGroupPredicateConfiguration)fC).Predicates[0].ShouldBeAssignableTo<AlwaysTruePredicateConfiguration>();
 
-            fC.GetType().Name.Should().Be( "GroupPredicateConfiguration", "Also the synchronous group because its predicate is sync." );
+            fC.GetType().Name.ShouldBe( "GroupPredicateConfiguration", "Also the synchronous group because its predicate is sync." );
 
             var f = fC.CreateAsyncPredicate();
             Throw.DebugAssert( f != null );
-            (await f( this )).Should().BeTrue();
+            (await f( this )).ShouldBeTrue();
         }
     }
 
@@ -207,11 +207,11 @@ public class PredicateTests
 
         var f = fC.CreatePredicate();
         Throw.DebugAssert( f != null );
-        f( 0 ).Should().Be( false );
-        f( "Ax" ).Should().Be( false );
-        f( "Axy" ).Should().Be( true );
-        f( "Bzy" ).Should().Be( true );
-        f( "Bzy but too long" ).Should().Be( false );
+        f( 0 ).ShouldBe( false );
+        f( "Ax" ).ShouldBe( false );
+        f( "Axy" ).ShouldBe( true );
+        f( "Bzy" ).ShouldBe( true );
+        f( "Bzy but too long" ).ShouldBe( false );
     }
 
     [Test]
@@ -226,11 +226,11 @@ public class PredicateTests
 
         var f = fC.CreateAsyncPredicate();
         Throw.DebugAssert( f != null );
-        (await f( 0 )).Should().Be( false );
-        (await f( "Ax" )).Should().Be( false );
-        (await f( "Axy" )).Should().Be( true );
-        (await f( "Bzy" )).Should().Be( true );
-        (await f( "Bzy but too long" )).Should().Be( false );
+        (await f( 0 )).ShouldBe( false );
+        (await f( "Ax" )).ShouldBe( false );
+        (await f( "Axy" )).ShouldBe( true );
+        (await f( "Bzy" )).ShouldBe( true );
+        (await f( "Bzy but too long" )).ShouldBe( false );
     }
 
     [Test]
@@ -247,11 +247,11 @@ public class PredicateTests
 
         var f = fC.CreateDescriptor( context );
         Throw.DebugAssert( f != null );
-        f.EvaluateSync( 0 ).Should().Be( false );
-        f.EvaluateSync( "Ax" ).Should().Be( false );
-        f.EvaluateSync( "Axy" ).Should().Be( true );
-        f.EvaluateSync( "Bzy" ).Should().Be( true );
-        f.EvaluateSync( "Bzy but too long" ).Should().Be( false );
+        f.EvaluateSync( 0 ).ShouldBe( false );
+        f.EvaluateSync( "Ax" ).ShouldBe( false );
+        f.EvaluateSync( "Axy" ).ShouldBe( true );
+        f.EvaluateSync( "Bzy" ).ShouldBe( true );
+        f.EvaluateSync( "Bzy but too long" ).ShouldBe( false );
     }
 
     [Test]
@@ -268,11 +268,11 @@ public class PredicateTests
 
         var f = fC.CreateDescriptor( context );
         Throw.DebugAssert( f != null );
-        (await f.EvaluateAsync( 0 )).Should().Be( false );
-        (await f.EvaluateAsync( "Ax" )).Should().Be( false );
-        (await f.EvaluateAsync( "Axy" )).Should().Be( true );
-        (await f.EvaluateAsync( "Bzy" )).Should().Be( true );
-        (await f.EvaluateAsync( "Bzy but too long" )).Should().Be( false );
+        (await f.EvaluateAsync( 0 )).ShouldBe( false );
+        (await f.EvaluateAsync( "Ax" )).ShouldBe( false );
+        (await f.EvaluateAsync( "Axy" )).ShouldBe( true );
+        (await f.EvaluateAsync( "Bzy" )).ShouldBe( true );
+        (await f.EvaluateAsync( "Bzy but too long" )).ShouldBe( false );
     }
 
     [Test]
@@ -298,16 +298,16 @@ public class PredicateTests
             Throw.DebugAssert( fC != null );
             var f = fC.CreatePredicate();
             Throw.DebugAssert( f != null );
-            f( "With Hello! fails." ).Should().BeFalse();
-            f( "Without succeeds." ).Should().BeTrue();
+            f( "With Hello! fails." ).ShouldBeFalse();
+            f( "Without succeeds." ).ShouldBeTrue();
         }
         {
             var fC = builder.Create<ObjectAsyncPredicateConfiguration>( TestHelper.Monitor, config );
             Throw.DebugAssert( fC != null );
             var f = fC.CreateAsyncPredicate();
             Throw.DebugAssert( f != null );
-            (await f( "With Hello! fails." )).Should().BeFalse();
-            (await f( "Without succeeds." )).Should().BeTrue();
+            (await f( "With Hello! fails." )).ShouldBeFalse();
+            (await f( "Without succeeds." )).ShouldBeTrue();
         }
     }
 
@@ -338,10 +338,10 @@ public class PredicateTests
             Throw.DebugAssert( fC != null );
             var f = fC.CreatePredicate();
             Throw.DebugAssert( f != null );
-            f( 0 ).Should().BeFalse();
-            f( this ).Should().BeFalse();
-            f( 0.0 ).Should().BeTrue();
-            f( "Hello" ).Should().BeTrue();
+            f( 0 ).ShouldBeFalse();
+            f( this ).ShouldBeFalse();
+            f( 0.0 ).ShouldBeTrue();
+            f( "Hello" ).ShouldBeTrue();
         }
         // Async
         {
@@ -349,10 +349,10 @@ public class PredicateTests
             Throw.DebugAssert( fC != null );
             var f = fC.CreateAsyncPredicate();
             Throw.DebugAssert( f != null );
-            (await f( this )).Should().BeFalse();
-            (await f( 0 )).Should().BeFalse();
-            (await f( double.Epsilon )).Should().BeTrue();
-            (await f( string.Empty )).Should().BeTrue();
+            (await f( this )).ShouldBeFalse();
+            (await f( 0 )).ShouldBeFalse();
+            (await f( double.Epsilon )).ShouldBeTrue();
+            (await f( string.Empty )).ShouldBeTrue();
         }
     }
 
