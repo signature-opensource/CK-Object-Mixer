@@ -1,5 +1,5 @@
 using CK.Core;
-using FluentAssertions;
+using Shouldly;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
@@ -56,8 +56,8 @@ public class TransformTests
         var f = fC.CreateTransform();
         Throw.DebugAssert( f != null );
 
-        f( "Hello" ).Should().Be( "Before-Hello-After-OneMore" );
-        f( 0 ).Should().Be( "Before-0-After-OneMore" );
+        f( "Hello" ).ShouldBe( "Before-Hello-After-OneMore" );
+        f( 0 ).ShouldBe( "Before-0-After-OneMore" );
     }
 
     [Test]
@@ -71,8 +71,8 @@ public class TransformTests
 
         var f = fC.CreateAsyncTransform();
         Throw.DebugAssert( f != null );
-        (await f( "Hello" )).Should().Be( "Before-Hello-After-OneMore" );
-        (await f( 0 )).Should().Be( "Before-0-After-OneMore" );
+        (await f( "Hello" )).ShouldBe( "Before-Hello-After-OneMore" );
+        (await f( 0 )).ShouldBe( "Before-0-After-OneMore" );
     }
 
     static MutableConfigurationSection GetStringOnlyConfiguration()
@@ -118,23 +118,23 @@ public class TransformTests
         var f = fC.CreateTransform();
         Throw.DebugAssert( f != null );
 
-        f( "Works with a string" ).Should().Be( "Before-Works with a string-After-OneMore" );
+        f( "Works with a string" ).ShouldBe( "Before-Works with a string-After-OneMore" );
 
-        FluentActions.Invoking( () => f( 0 ) ).Should().Throw<ArgumentException>();
+        Util.Invokable( () => f( 0 ) ).ShouldThrow<ArgumentException>();
 
         var context = new MonitoredTransformDescriptorContext( TestHelper.Monitor );
         var fH = fC.CreateDescriptor( context );
         Throw.DebugAssert( fH != null );
 
-        fH.TransformSync( "Works with a string" ).Should().Be( "Before-Works with a string-After-OneMore" );
+        fH.TransformSync( "Works with a string" ).ShouldBe( "Before-Works with a string-After-OneMore" );
 
         using( TestHelper.Monitor.CollectTexts( out var logs ) )
         {
             var r = fH.TransformSync( 0 );
-            r.Should().BeAssignableTo<ArgumentException>();
-            ((ArgumentException)r).Message.Should().Be( "String expected, got 'int'." );
+            r.ShouldBeAssignableTo<ArgumentException>();
+            ((ArgumentException)r).Message.ShouldBe( "String expected, got 'int'." );
 
-            logs.Should().Contain( "Transform 'Root:Transforms:0:Transforms:0' error while processing:" );
+            logs.ShouldContain( "Transform 'Root:Transforms:0:Transforms:0' error while processing:" );
         }
 
     }
@@ -149,23 +149,23 @@ public class TransformTests
         var f = fC.CreateAsyncTransform();
         Throw.DebugAssert( f != null );
 
-        (await f( "Works with a string" )).Should().Be( "Before-Works with a string-After-OneMore" );
+        (await f( "Works with a string" )).ShouldBe( "Before-Works with a string-After-OneMore" );
 
-        await FluentActions.Awaiting( async () => await f( 0 ) ).Should().ThrowAsync<ArgumentException>();
+        await Util.Awaitable( async () => await f( 0 ) ).ShouldThrowAsync<ArgumentException>();
 
         var context = new MonitoredTransformDescriptorContext( TestHelper.Monitor );
         var fH = fC.CreateDescriptor( context );
         Throw.DebugAssert( fH != null );
 
-        (await fH.TransformAsync( "Works with a string" )).Should().Be( "Before-Works with a string-After-OneMore" );
+        (await fH.TransformAsync( "Works with a string" )).ShouldBe( "Before-Works with a string-After-OneMore" );
 
         using( TestHelper.Monitor.CollectTexts( out var logs ) )
         {
             var r = await fH.TransformAsync( 0 );
-            r.Should().BeAssignableTo<ArgumentException>();
-            ((ArgumentException)r).Message.Should().Be( "String expected, got 'int'." );
+            r.ShouldBeAssignableTo<ArgumentException>();
+            ((ArgumentException)r).Message.ShouldBe( "String expected, got 'int'." );
 
-            logs.Should().Contain( "Transform 'Root:Transforms:0:Transforms:0' error while processing:" );
+            logs.ShouldContain( "Transform 'Root:Transforms:0:Transforms:0' error while processing:" );
         }
 
     }

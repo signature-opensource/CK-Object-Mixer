@@ -1,7 +1,7 @@
 using CK.AppIdentity;
 using CK.Core;
 using CK.Object.Mixer;
-using FluentAssertions;
+using Shouldly;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -43,31 +43,31 @@ public class SimpleTests
             // Straight working input.
             {
                 var r = await mixer.MixAsync( TestHelper.Monitor, -3712.0 );
-                r.Output.Should().Contain( 3712.0 );
-                r.Rejected.Should().BeEmpty();
-                r.TotalProcessCount.Should().Be( 1 );
+                r.Output.ShouldContain( 3712.0 );
+                r.Rejected.ShouldBeEmpty();
+                r.TotalProcessCount.ShouldBe( 1 );
             }
 
             // Working with 2 processes.
             {
                 var r = await mixer.MixAsync( TestHelper.Monitor, 42.0 );
-                r.Output.Should().Contain( 42.0 );
-                r.Rejected.Should().BeEmpty();
-                r.TotalProcessCount.Should().Be( 2 );
+                r.Output.ShouldContain( 42.0 );
+                r.Rejected.ShouldBeEmpty();
+                r.TotalProcessCount.ShouldBe( 2 );
             }
 
             // Failing the output condition.
             {
                 var rFailed = await mixer.MixAsync( TestHelper.Monitor, 8.0 );
-                rFailed.Output.Should().BeEmpty();
-                rFailed.Rejected.Should().Contain( (-8.0, "Reached MaxProcessCount: 4.") );
-                rFailed.TotalProcessCount.Should().Be( 5 );
+                rFailed.Output.ShouldBeEmpty();
+                rFailed.Rejected.ShouldContain( (-8.0, "Reached MaxProcessCount: 4.") );
+                rFailed.TotalProcessCount.ShouldBe( 5 );
             }
             {
                 var rFailed = await mixer.MixAsync( TestHelper.Monitor, -8.0 );
-                rFailed.Output.Should().BeEmpty();
-                rFailed.Rejected.Should().Contain( (8.0, "Reached MaxProcessCount: 4.") );
-                rFailed.TotalProcessCount.Should().Be( 5 );
+                rFailed.Output.ShouldBeEmpty();
+                rFailed.Rejected.ShouldContain( (8.0, "Reached MaxProcessCount: 4.") );
+                rFailed.TotalProcessCount.ShouldBe( 5 );
             }
         }
 
@@ -101,15 +101,15 @@ public class SimpleTests
 
             {
                 var r = await mixer.MixAsync( TestHelper.Monitor, "abcde" );
-                r.Output.Should().Contain( "Processed<abcde>" );
-                r.Rejected.Should().BeEmpty();
-                r.TotalProcessCount.Should().Be( 1 );
+                r.Output.ShouldContain( "Processed<abcde>" );
+                r.Rejected.ShouldBeEmpty();
+                r.TotalProcessCount.ShouldBe( 1 );
             }
             {
                 var r = await mixer.MixAsync( TestHelper.Monitor, 42 );
-                r.Output.Concatenate().Should().Contain( "42, int" );
-                r.Rejected.Should().BeEmpty();
-                r.TotalProcessCount.Should().Be( 1 );
+                r.Output.Concatenate().ShouldContain( "42, int" );
+                r.Rejected.ShouldBeEmpty();
+                r.TotalProcessCount.ShouldBe( 1 );
             }
         }
     }
@@ -146,15 +146,15 @@ public class SimpleTests
 
             {
                 var r = await mixer.MixAsync( TestHelper.Monitor, "abcde" );
-                r.Output.Should().Contain( "Processed<abcde>" );
-                r.Rejected.Should().BeEmpty();
-                r.TotalProcessCount.Should().Be( 1 );
+                r.Output.ShouldContain( "Processed<abcde>" );
+                r.Rejected.ShouldBeEmpty();
+                r.TotalProcessCount.ShouldBe( 1 );
             }
             {
                 var r = await mixer.MixAsync( TestHelper.Monitor, 42 );
-                r.Output.Concatenate().Should().Contain( "Processed<42>, Processed<int>" );
-                r.Rejected.Should().BeEmpty();
-                r.TotalProcessCount.Should().Be( 3 );
+                r.Output.Concatenate().ShouldContain( "Processed<42>, Processed<int>" );
+                r.Rejected.ShouldBeEmpty();
+                r.TotalProcessCount.ShouldBe( 3 );
             }
 
             var mixerFeature = appIdentity.GetRequiredFeature<ObjectMixerFeature>();
@@ -184,21 +184,21 @@ public class SimpleTests
                     }
                   ]
                 }
-                """ ) ).Should().BeTrue();
+                """ ) ).ShouldBeTrue();
 
             var mixer2 = factory.Create<string>( appIdentity );
 
             {
                 var r = await mixer2.MixAsync( TestHelper.Monitor, "abcde" );
-                r.Output.Should().Contain( "Processed<abcde>" );
-                r.Rejected.Should().BeEmpty();
-                r.TotalProcessCount.Should().Be( 1 );
+                r.Output.ShouldContain( "Processed<abcde>" );
+                r.Rejected.ShouldBeEmpty();
+                r.TotalProcessCount.ShouldBe( 1 );
             }
             {
                 var r = await mixer2.MixAsync( TestHelper.Monitor, 42 );
-                r.Output.Concatenate().Should().Contain( "Processed<int>" );
-                r.Rejected.Should().Contain( ("Processed<42>", "Reached MaxProcessCount: 4.") );
-                r.TotalProcessCount.Should().Be( 6 );
+                r.Output.Concatenate().ShouldContain( "Processed<int>" );
+                r.Rejected.ShouldContain( ("Processed<42>", "Reached MaxProcessCount: 4.") );
+                r.TotalProcessCount.ShouldBe( 6 );
             }
         }
     }

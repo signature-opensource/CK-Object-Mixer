@@ -1,7 +1,7 @@
 using CK.Core;
 using CK.Object.Predicate;
 using CK.Object.Transform;
-using FluentAssertions;
+using Shouldly;
 using Microsoft.VisualBasic;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -48,32 +48,32 @@ public class BasicTests
             {
                 var f = fC.CreateProcessor( services );
                 Throw.DebugAssert( f != null );
-                f( 3712 ).Should().BeNull();
-                f( this ).Should().BeNull();
-                f( 3712.5 ).Should().Be( -3712.5 );
-                f( "Hello!" ).Should().Be( "HELLO!" );
+                f( 3712 ).ShouldBeNull();
+                f( this ).ShouldBeNull();
+                f( 3712.5 ).ShouldBe( -3712.5 );
+                f( "Hello!" ).ShouldBe( "HELLO!" );
 
                 var u = new UserRecord( "Zoe", 44, new List<UserRecord>() );
                 var uO = f( u );
-                uO.Should().BeSameAs( u );
+                uO.ShouldBeSameAs( u );
                 u = (UserRecord)uO!;
-                u.Friends.Should().HaveCount( 1 );
+                u.Friends.Count.ShouldBe( 1 );
             }
             // Descriptor
             var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
             {
                 var fH = fC.CreateDescriptor( context, services );
                 Throw.DebugAssert( fH != null );
-                fH.SyncProcess( 3712 ).Should().BeNull();
-                fH.SyncProcess( this ).Should().BeNull();
-                fH.SyncProcess( 3712.5 ).Should().Be( -3712.5 );
-                fH.SyncProcess( "Hello!" ).Should().Be( "HELLO!" );
+                fH.SyncProcess( 3712 ).ShouldBeNull();
+                fH.SyncProcess( this ).ShouldBeNull();
+                fH.SyncProcess( 3712.5 ).ShouldBe( -3712.5 );
+                fH.SyncProcess( "Hello!" ).ShouldBe( "HELLO!" );
 
                 var u = new UserRecord( "Zoe", 44, new List<UserRecord>() );
                 var uO = fH.SyncProcess( u );
-                uO.Should().BeSameAs( u );
+                uO.ShouldBeSameAs( u );
                 u = (UserRecord)uO!;
-                u.Friends.Should().HaveCount( 1 );
+                u.Friends.Count.ShouldBe( 1 );
             }
         }
         // Async
@@ -84,32 +84,32 @@ public class BasicTests
             {
                 var f = fC.CreateAsyncProcessor( services );
                 Throw.DebugAssert( f != null );
-                (await f( 3712 )).Should().BeNull();
-                (await f( this )).Should().BeNull();
-                (await f( 3712.5 )).Should().Be( -3712.5 );
-                (await f( "Hello!" )).Should().Be( "HELLO!" );
+                (await f( 3712 )).ShouldBeNull();
+                (await f( this )).ShouldBeNull();
+                (await f( 3712.5 )).ShouldBe( -3712.5 );
+                (await f( "Hello!" )).ShouldBe( "HELLO!" );
 
                 var u = new UserRecord( "Zoe", 44, new List<UserRecord>() );
                 var uO = await f( u );
-                uO.Should().BeSameAs( u );
+                uO.ShouldBeSameAs( u );
                 u = (UserRecord)uO!;
-                u.Friends.Should().HaveCount( 1 );
+                u.Friends.Count.ShouldBe( 1 );
             }
             // Descriptor
             var context = new MonitoredProcessorDescriptorContext( TestHelper.Monitor );
             {
                 var fH = fC.CreateDescriptor( context, services );
                 Throw.DebugAssert( fH != null );
-                (await fH.ProcessAsync( 3712 )).Should().BeNull();
-                (await fH.ProcessAsync( this )).Should().BeNull();
-                (await fH.ProcessAsync( 3712.5 )).Should().Be( -3712.5 );
-                (await fH.ProcessAsync( "Hello!" )).Should().Be( "HELLO!" );
+                (await fH.ProcessAsync( 3712 )).ShouldBeNull();
+                (await fH.ProcessAsync( this )).ShouldBeNull();
+                (await fH.ProcessAsync( 3712.5 )).ShouldBe( -3712.5 );
+                (await fH.ProcessAsync( "Hello!" )).ShouldBe( "HELLO!" );
 
                 var u = new UserRecord( "Zoe", 44, new List<UserRecord>() );
                 var uO = await fH.ProcessAsync( u );
-                uO.Should().BeSameAs( u );
+                uO.ShouldBeSameAs( u );
                 u = (UserRecord)uO!;
-                u.Friends.Should().HaveCount( 1 );
+                u.Friends.Count.ShouldBe( 1 );
             }
         }
     }
@@ -159,13 +159,13 @@ public class BasicTests
             {
                 var f = fC.CreateProcessor();
                 Throw.DebugAssert( f != null );
-                f( 3712 ).Should().BeNull();
-                f( this ).Should().BeNull();
-                f( 3712.5 ).Should().Be( "-3712.5" );
+                f( 3712 ).ShouldBeNull();
+                f( this ).ShouldBeNull();
+                f( 3712.5 ).ShouldBe( "-3712.5" );
 
-                f( "Hello!" ).Should().BeNull( "Not processed (length is 6)." );
-                f( "Hello world!" ).Should().Be( "HELLO WORLD!" );
-                f( "Hell!" ).Should().Be( "HELL!" );
+                f( "Hello!" ).ShouldBeNull( "Not processed (length is 6)." );
+                f( "Hello world!" ).ShouldBe( "HELLO WORLD!" );
+                f( "Hell!" ).ShouldBe( "HELL!" );
             }
 
             // Descriptor
@@ -173,12 +173,12 @@ public class BasicTests
             {
                 var fH = fC.CreateDescriptor( context );
                 Throw.DebugAssert( fH != null );
-                fH.SyncProcess( 3712 ).Should().BeNull();
-                fH.SyncProcess( this ).Should().BeNull();
-                fH.SyncProcess( 3712.5 ).Should().Be( "-3712.5" );
-                fH.SyncProcess( "Hello!" ).Should().BeNull( "Not processed (length is 6)." );
-                fH.SyncProcess( "Hello world!" ).Should().Be( "HELLO WORLD!" );
-                fH.SyncProcess( "Hell!" ).Should().Be( "HELL!" );
+                fH.SyncProcess( 3712 ).ShouldBeNull();
+                fH.SyncProcess( this ).ShouldBeNull();
+                fH.SyncProcess( 3712.5 ).ShouldBe( "-3712.5" );
+                fH.SyncProcess( "Hello!" ).ShouldBeNull( "Not processed (length is 6)." );
+                fH.SyncProcess( "Hello world!" ).ShouldBe( "HELLO WORLD!" );
+                fH.SyncProcess( "Hell!" ).ShouldBe( "HELL!" );
             }
 
         }
@@ -190,12 +190,12 @@ public class BasicTests
             {
                 var f = fC.CreateAsyncProcessor();
                 Throw.DebugAssert( f != null );
-                (await f( 3712 )).Should().BeNull();
-                (await f( this )).Should().BeNull();
-                (await f( 3712.5 )).Should().Be( "-3712.5" );
-                (await f( "Hello!" )).Should().BeNull( "Not processed (length is 6)." );
-                (await f( "Hello world!" )).Should().Be( "HELLO WORLD!" );
-                (await f( "Hell!" )).Should().Be( "HELL!" );
+                (await f( 3712 )).ShouldBeNull();
+                (await f( this )).ShouldBeNull();
+                (await f( 3712.5 )).ShouldBe( "-3712.5" );
+                (await f( "Hello!" )).ShouldBeNull( "Not processed (length is 6)." );
+                (await f( "Hello world!" )).ShouldBe( "HELLO WORLD!" );
+                (await f( "Hell!" )).ShouldBe( "HELL!" );
             }
 
             // Descriptor
@@ -203,12 +203,12 @@ public class BasicTests
             {
                 var fH = fC.CreateDescriptor( context );
                 Throw.DebugAssert( fH != null );
-                (await fH.ProcessAsync( 3712 )).Should().BeNull();
-                (await fH.ProcessAsync( this )).Should().BeNull();
-                (await fH.ProcessAsync( 3712.5 )).Should().Be( "-3712.5" );
-                (await fH.ProcessAsync( "Hello!" )).Should().BeNull( "Not processed (length is 6)." );
-                (await fH.ProcessAsync( "Hello world!" )).Should().Be( "HELLO WORLD!" );
-                (await fH.ProcessAsync( "Hell!" )).Should().Be( "HELL!" );
+                (await fH.ProcessAsync( 3712 )).ShouldBeNull();
+                (await fH.ProcessAsync( this )).ShouldBeNull();
+                (await fH.ProcessAsync( 3712.5 )).ShouldBe( "-3712.5" );
+                (await fH.ProcessAsync( "Hello!" )).ShouldBeNull( "Not processed (length is 6)." );
+                (await fH.ProcessAsync( "Hello world!" )).ShouldBe( "HELLO WORLD!" );
+                (await fH.ProcessAsync( "Hell!" )).ShouldBe( "HELL!" );
             }
         }
     }

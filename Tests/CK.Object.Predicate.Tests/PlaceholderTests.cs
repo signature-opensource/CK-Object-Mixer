@@ -1,5 +1,5 @@
 using CK.Core;
-using FluentAssertions;
+using Shouldly;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
@@ -82,7 +82,7 @@ public class PlaceholderTests
         var f = fC.CreatePredicate();
         Throw.DebugAssert( f != null );
 
-        f( "AxK" ).Should().Be( false, "There must 'A' or 'B' and at least 2 of 'x', 'y', 'z'." );
+        f( "AxK" ).ShouldBe( false, "There must 'A' or 'B' and at least 2 of 'x', 'y', 'z'." );
 
         // Let's fix this by allowing 'K' to belong to the {'x','y,'z'} set.
         var fix1 = new MutableConfigurationSection( "Root:Predicates:2:Predicates:3", "<Dynamic>" );
@@ -93,8 +93,8 @@ public class PlaceholderTests
         var f2 = fC2.Synchronous.CreatePredicate();
         Throw.DebugAssert( f2 != null );
 
-        f2( "AxK" ).Should().Be( true, "Fixed" );
-        f2( "xK" ).Should().Be( false, "There must be a 'A' or a 'B'." );
+        f2( "AxK" ).ShouldBe( true, "Fixed" );
+        f2( "xK" ).ShouldBe( false, "There must be a 'A' or a 'B'." );
 
         // Let's remove this constraint by injecting a "AlwaysTrue" in the "Or".
         // Let's fix this by allowing 'K' to belong to the {'x','y,'z'} set.
@@ -105,7 +105,7 @@ public class PlaceholderTests
         var f3 = fC3.Synchronous.CreatePredicate();
         Throw.DebugAssert( f3 != null );
 
-        f3( "xK" ).Should().Be( true, "Fixed." );
+        f3( "xK" ).ShouldBe( true, "Fixed." );
     }
 
     [Test]
@@ -120,7 +120,7 @@ public class PlaceholderTests
         var f = fC.CreateAsyncPredicate();
         Throw.DebugAssert( f != null );
 
-        (await f( "AxK" )).Should().Be( false, "There must 'A' or 'B' and at least 2 of 'x', 'y', 'z'." );
+        (await f( "AxK" )).ShouldBe( false, "There must 'A' or 'B' and at least 2 of 'x', 'y', 'z'." );
 
         // Let's fix this by allowing 'K' to belong to the {'x','y,'z'} set.
         var fix1 = new MutableConfigurationSection( "Root:Predicates:2:Predicates:3", "<Dynamic>" );
@@ -131,8 +131,8 @@ public class PlaceholderTests
         var f2 = fC2.CreateAsyncPredicate();
         Throw.DebugAssert( f2 != null );
 
-        (await f2( "AxK" )).Should().Be( true, "Fixed" );
-        (await f2( "xK" )).Should().Be( false, "There must be a 'A' or a 'B'." );
+        (await f2( "AxK" )).ShouldBe( true, "Fixed" );
+        (await f2( "xK" )).ShouldBe( false, "There must be a 'A' or a 'B'." );
 
         // Let's remove this constraint by injecting a "AlwaysTrue" in the "Or".
         // Let's fix this by allowing 'K' to belong to the {'x','y,'z'} set.
@@ -143,7 +143,7 @@ public class PlaceholderTests
         var f3 = fC3.CreateAsyncPredicate();
         Throw.DebugAssert( f3 != null );
 
-        (await f3( "xK" )).Should().Be( true, "Fixed." );
+        (await f3( "xK" )).ShouldBe( true, "Fixed." );
     }
 
 }
