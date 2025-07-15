@@ -10,8 +10,8 @@
     <Compile Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity" Version="0.10.1--0001-develop" />
-    <PackageReference Include="CK.Globalization" Version="3.0.1--0001-develop" />
+    <PackageReference Include="CK.AppIdentity" Version="0.10.1--0002-develop" />
+    <PackageReference Include="CK.Globalization" Version="3.0.1--0002-develop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Object.Processor\CK.Object.Processor.csproj" />
