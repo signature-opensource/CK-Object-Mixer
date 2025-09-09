@@ -11,7 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppIdentity" Version="0.10.1--0019-develop" />
-    <PackageReference Include="CK.Globalization" Version="3.0.1--0021-develop" />
+    <PackageReference Include="CK.Globalization" Version="3.0.1--0022-develop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Object.Processor\CK.Object.Processor.csproj" />
