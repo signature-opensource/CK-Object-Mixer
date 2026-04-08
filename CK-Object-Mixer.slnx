@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="appveyor.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="NuGet.config" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/CK.Object.Mixer.Tests/CK.Object.Mixer.Tests.csproj" />
+    <Project Path="Tests/CK.Object.Predicate.Tests/CK.Object.Predicate.Tests.csproj" />
+    <Project Path="Tests/CK.Object.Processor.Tests/CK.Object.Processor.Tests.csproj" />
+    <Project Path="Tests/CK.Object.Transform.Tests/CK.Object.Transform.Tests.csproj" />
+  </Folder>
+  <Project Path="CK.Object.Mixer/CK.Object.Mixer.csproj" />
+  <Project Path="CK.Object.Predicate/CK.Object.Predicate.csproj" />
+  <Project Path="CK.Object.Processor/CK.Object.Processor.csproj" />
+  <Project Path="CK.Object.Transform/CK.Object.Transform.csproj" />
+</Solution>
