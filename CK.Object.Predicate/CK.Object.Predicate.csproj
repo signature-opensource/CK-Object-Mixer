@@ -4,7 +4,7 @@
     <LangVersion>11</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.Configuration" Version="2.0.0-mike.0.ci.4" />
-    <PackageReference Include="CK.Globalization" Version="7.0.0-mike.0.ci.4" />
+    <PackageReference Include="CK.Configuration" Version="2.0.0" />
+    <PackageReference Include="CK.Globalization" Version="7.0.0" />
   </ItemGroup>
 </Project>
