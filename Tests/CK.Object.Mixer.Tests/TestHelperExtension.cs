@@ -14,7 +14,7 @@ static class TestHelperExtension
 {
     public static NormalizedPath TestStoreFolder = TestHelper.TestProjectFolder.AppendPart( "TestStore" );
 
-    public static NormalizedPath GetCleanTestStoreFolder( this IBasicTestHelper helper )
+    public static NormalizedPath GetCleanTestStoreFolder( this IMonitorTestHelper helper )
     {
         return helper.CleanupFolder( TestStoreFolder );
     }
@@ -28,7 +28,7 @@ static class TestHelperExtension
     /// <param name="configuration">The configuration.</param>
     /// <param name="configureServices">Optional other service registrations.</param>
     /// <returns>The started service.</returns>
-    public static Task<ServiceProvider> CreateWithApplicationServiceAsync( this IBasicTestHelper @this,
+    public static Task<ServiceProvider> CreateWithApplicationServiceAsync( this IMonitorTestHelper @this,
                                                                            Action<MutableConfigurationSection> configuration,
                                                                            Action<ServiceCollection>? configureServices = null )
     {
@@ -46,7 +46,7 @@ static class TestHelperExtension
     /// <param name="c">The configuration.</param>
     /// <param name="configureServices">Optional other service registrations.</param>
     /// <returns>The started service.</returns>
-    public static async Task<ServiceProvider> CreateWithApplicationServiceAsync( this IBasicTestHelper @this,
+    public static async Task<ServiceProvider> CreateWithApplicationServiceAsync( this IMonitorTestHelper @this,
                                                                                  ApplicationIdentityServiceConfiguration c,
                                                                                  Action<ServiceCollection>? configureServices = null )
     {
