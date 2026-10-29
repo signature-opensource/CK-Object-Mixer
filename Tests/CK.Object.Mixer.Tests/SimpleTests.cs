@@ -20,9 +20,9 @@ public class SimpleTests
             {
                 c.AddJson( """
                     {
-                        "Assemblies": { "CK.Object.Mixer.Tests": "T" },
                         "FullName": "Test/$Test",
                         "Local": {
+                            "Assemblies": { "CK.Object.Mixer.Tests": "T" },
                             "ObjectMixers": {
                                 "Number": {
                                     "Type": "ObjectMixer",
@@ -81,9 +81,9 @@ public class SimpleTests
             {
                 c.AddJson( """
                     {
-                        "Assemblies": { "CK.Object.Mixer.Tests": "T" },
                         "FullName": "Test/$Test",
                         "Local": {
+                            "Assemblies": { "CK.Object.Mixer.Tests": "T" },
                             "ObjectMixers": {
                                 "For strings...": {
                                     "Type": "StupidString, T"
@@ -122,9 +122,9 @@ public class SimpleTests
             {
                 c.AddJson( """
                     {
-                        "Assemblies": { "CK.Object.Mixer.Tests": "T" },
                         "FullName": "Test/$Test",
                         "Local": {
+                            "Assemblies": { "CK.Object.Mixer.Tests": "T" },
                             "ObjectMixers": {
                                 "For strings...": {
                                     "Type": "StupidString, T",
