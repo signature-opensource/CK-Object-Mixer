@@ -4,7 +4,7 @@
     <LangVersion>11</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.Configuration" Version="3.0.0-0.cris-auth.0.ci.6" />
-    <PackageReference Include="CK.Globalization" Version="8.0.0-0.cris-auth.0.ci.7" />
+    <PackageReference Include="CK.Configuration" Version="3.0.0-0.cris-auth" />
+    <PackageReference Include="CK.Globalization" Version="8.0.0-0.cris-auth" />
   </ItemGroup>
 </Project>
