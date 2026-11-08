@@ -5,6 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.Configuration" Version="3.0.0-0.cris-auth.1.ci.11" />
-    <PackageReference Include="CK.Globalization" Version="8.0.0-0.cris-auth.1.ci.14" />
+    <PackageReference Include="CK.Globalization" Version="8.0.0-0.cris-auth.1.ci.15" />
   </ItemGroup>
 </Project>
