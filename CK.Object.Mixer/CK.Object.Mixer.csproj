@@ -10,7 +10,7 @@
     <Compile Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity" Version="3.0.0-0.cris-auth.1.ci.65" />
+    <PackageReference Include="CK.AppIdentity" Version="3.0.0-0.uc.0.ci.66" />
     <PackageReference Include="CK.Globalization" Version="8.0.0-0.cris-auth.1.ci.18" />
   </ItemGroup>
   <ItemGroup>
