@@ -60,6 +60,7 @@ static class TestHelperExtension
         serviceBuilder.AddScoped<ObjectMixerFactory>();
 
         configureServices?.Invoke( serviceBuilder );
+        serviceBuilder.AddPartyComponentDirectory();
         var services = serviceBuilder.BuildServiceProvider();
 
         var s = services.GetRequiredService<ApplicationIdentityService>();

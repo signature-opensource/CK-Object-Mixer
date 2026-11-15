@@ -11,6 +11,7 @@ namespace CK.Object.Mixer;
 /// Handles "ObjectMixers" configurations on parties. <see cref="ILocalParty.LocalConfiguration"/> is used
 /// for the <see cref="ApplicationIdentityService"/> and any <see cref="ITenantDomainParty"/>.
 /// </summary>
+[PartyFeature( IsOptional = false )]
 public class ObjectMixerFeatureDriver : ApplicationIdentityFeatureDriver
 {
     /// <summary>
@@ -18,7 +19,7 @@ public class ObjectMixerFeatureDriver : ApplicationIdentityFeatureDriver
     /// </summary>
     /// <param name="s">The identity service.</param>
     public ObjectMixerFeatureDriver( ApplicationIdentityService s )
-        : base( s, true )
+        : base( s )
     {
     }
 
